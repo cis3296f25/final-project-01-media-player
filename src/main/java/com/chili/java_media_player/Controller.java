@@ -9,6 +9,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 
+/**
+ * Controler to Hello View Screen
+ * 
+ **/
 public class Controller {
     @FXML
     private Label welcomeText;
@@ -18,7 +22,11 @@ public class Controller {
     private AnimationTimer testProgressBarTimer;
     private long startTime;
 
-    // private long star
+    /**
+     * Initializes Controller, and instantiates the AnimationTimer needed for the
+     * Progress Bar test.
+     * 
+     */
     @FXML
     private void initialize() {
         this.startTime = System.nanoTime();
@@ -36,6 +44,9 @@ public class Controller {
         testProgressBarTimer.start();
     }
 
+    /**
+     * Event that occurs on button click.
+     */
     @FXML
     protected void onHelloButtonClick() {
 
