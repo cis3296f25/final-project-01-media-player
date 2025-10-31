@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: gray;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chili.java_media_player.Controller">
     <padding>
@@ -14,4 +15,14 @@
 
     <Label fx:id="welcomeText" />
     <Button onAction="#onHelloButtonClick" text="Hello Software Design class of Fall 2025" />
+
+    <Label text="Created by:&#xD;
+        Logan Small&#xD;
+        Yong Yao Huang&#xD;
+        Joseph Fiore&#xD;
+        Chili Ramgolam">
+        <font>
+            <Font size="20.0"/>
+        </font>
+    </Label>
 </VBox>
