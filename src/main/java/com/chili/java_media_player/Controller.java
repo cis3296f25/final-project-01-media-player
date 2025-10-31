@@ -20,6 +20,5 @@ public class Controller {
         Collections.shuffle(welcomeList);
 
         welcomeText.setText(welcomeList.get(0));
-
     }
 }
