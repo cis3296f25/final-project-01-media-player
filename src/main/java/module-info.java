@@ -10,6 +10,7 @@ module com.chili.java_media_player {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens com.chili.java_media_player to javafx.fxml;
     exports com.chili.java_media_player;
