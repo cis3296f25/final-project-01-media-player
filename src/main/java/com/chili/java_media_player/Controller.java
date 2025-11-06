@@ -1,13 +1,20 @@
 package com.chili.java_media_player;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections; //imported here to add a shuffle, can remove later if shuffle not required
 import java.util.List;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.stage.Stage;
+
+import javax.swing.*;
 
 /**
  * Controler to Hello View Screen
@@ -58,5 +65,20 @@ public class Controller {
         welcomeText.setText(welcomeList.get(0));
 
     }
+    @FXML
+    protected void openSettings() {
+        Parent root;
+        try {
+            root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("JMP Settings");
+            stage.setScene(new Scene(root, 550, 550));
+            stage.getScene().getStylesheets().add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
+            stage.show();
+            stage.show();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
 
+    }
 }
