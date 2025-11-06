@@ -93,19 +93,6 @@ public class Controller {
 
     }
     @FXML
-    protected void openSettings() {
-        Parent root;
-        try {
-            root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("JMP Settings");
-            stage.setScene(new Scene(root, 550, 550));
-            stage.getScene().getStylesheets().add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
-            stage.show();
-            stage.show();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
 
     //DEBUG, FILL FUNCTION IN LATER
     //STATUS LABEL IS JUST TO SHOW THAT THE ID LOADED IN hello-view.fxml CAN INTERACT WITH CONTROLLER
@@ -139,6 +126,18 @@ public class Controller {
     }
 
     public void onSettingsPreferences(ActionEvent actionEvent) {
+        Parent root;
+        try {
+            root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("JMP Settings");
+            stage.setScene(new Scene(root, 550, 550));
+            stage.getScene().getStylesheets().add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
+            stage.show();
+            stage.show();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
         statusLabel.setText("Saving settings...");
     }
 
@@ -184,8 +183,5 @@ public class Controller {
             int vol = newValue.intValue();
             statusLabel.setText("Volume: " + vol + "%");
         });
-    }
-
-
     }
 }
