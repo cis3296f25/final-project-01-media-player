@@ -1,23 +1,11 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# JMP
+JMP is a media player with an audio visualizer 
 
-![This is a screenshot.](images.png)
+
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
-```
-tar -xzf  
-```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
-
-# How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+## Windows
+Download `windows.zip` from the latest release.
+Extract and run `bin\app.bat`
 
 ### How to build
 - Use this github repository: ... 
