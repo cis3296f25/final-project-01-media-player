@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the JavaMediaPlayer application using TestFX.
- * TestFX allows us to interact with the JavaFX UI components in a testing environment.
+ * TestFX allows us to interact with the JavaFX UI components in a testing
+ * environment.
  */
 @ExtendWith(ApplicationExtension.class)
 public class ControllerTest {
@@ -45,7 +46,6 @@ public class ControllerTest {
         assertNotNull(mainStage.getScene().getRoot(), "The main scene content should not be null.");
     }
 
-
     /**
      * Tests the onSettingsPreferences action
      * Makes sure that it properly opens, and the title is correct
@@ -64,7 +64,8 @@ public class ControllerTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Find settings window
-        // Loop through windows until it finds one that isn't the main window (prob a better way to do this)
+        // Loop through windows until it finds one that isn't the main window (prob a
+        // better way to do this)
         Stage settingsStage = null;
         for (Window window : Stage.getWindows()) {
             if (window instanceof Stage stage &&
