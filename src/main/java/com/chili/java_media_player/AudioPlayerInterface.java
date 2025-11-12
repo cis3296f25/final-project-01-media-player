@@ -7,4 +7,7 @@ public interface AudioPlayerInterface {
 
     public void pause();
 
+    // public void setVolume(float volume);
+
+    // public void removeFromQueue(float volume);
 }
