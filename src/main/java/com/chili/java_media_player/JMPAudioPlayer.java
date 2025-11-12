@@ -1,5 +1,7 @@
 package com.chili.java_media_player;
 
+import java.nio.file.Paths;
+
 import javafx.scene.media.AudioClip;
 
 /**
@@ -12,7 +14,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
 
     @Override
     public void load(String audio) {
-        this.player = new AudioClip(audio);
+        this.player = new AudioClip(Paths.get(audio).toUri().toString());
 
     }
 
