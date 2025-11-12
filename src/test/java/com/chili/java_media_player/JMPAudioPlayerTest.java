@@ -43,4 +43,15 @@ public class JMPAudioPlayerTest {
         assertTrue(this.player.currentlyPlaying());
     }
 
+    // what happens if an audio file is loaded in while another clip is playing?
+    @Test
+    void LoadingAudioFileWhileAudioIsPlaying() throws InterruptedException {
+        String audio_source_test = "src/test/java/resources/야생ｋｉｎｅｔｉｃ꿈 - icy constellations [2901409654].mp3";
+        String audio_source_test_second = "src/test/java/resources/야생ｋｉｎｅｔｉｃ꿈 - visible stars [4164720865].mp3";
+        player.load(audio_source_test);
+        player.play();
+        Thread.sleep(100);
+        player.load(audio_source_test_second);
+    }
+
 }
