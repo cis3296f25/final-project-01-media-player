@@ -59,6 +59,13 @@
                             showTickMarks="true" />
                 </VBox>
             </HBox>
+
+            <Label fx:id="playlistStatusLabel" text="No tracks loaded" style="-fx-font-size: 14; -fx-text-fill: #333333;" />
+
+            <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
+                <Button text="◀ Previous" onAction="#previousTrackClick"/>
+                <Button text="Next ▶" onAction="#nextTrackClick"/>
+            </HBox>
         </VBox>
     </center>
 
@@ -69,6 +76,8 @@
             <Button fx:id="playButton" text="Play" onAction="#onPlayClick"/>
             <Button fx:id="replayButton" text="Replay" onAction="#replayClick"/>
             <Button fx:id="shuffleButton" text="Shuffle" onAction="#shuffleClick"/>
+            <Button text="Remove" onAction="#removeTrackClick"/>
+            <Button text="Clear" onAction="#clearPlaylistClick"/>
         </HBox>
     </bottom>
 

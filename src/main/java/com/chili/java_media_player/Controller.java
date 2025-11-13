@@ -5,27 +5,19 @@ import java.util.ArrayList;
 import java.util.Collections; //imported here to add a shuffle, can remove later if shuffle not required
 import java.util.List;
 
-import eu.hansolo.tilesfx.Alarm;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
-
-import javax.swing.*;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
-
-import javax.swing.*;
 
 /**
  * Controler to Hello View Screen
@@ -41,6 +33,8 @@ public class Controller {
     @FXML
     public Label statusLabel;
     @FXML
+    public Label playlistStatusLabel;
+    @FXML
     private Slider volumeSlider;
 
     @FXML
@@ -49,8 +43,10 @@ public class Controller {
     private ProgressIndicator testProgressBar;
 
     private AnimationTimer testProgressBarTimer;
+    private AnimationTimer autoPlayTimer;
     private long startTime;
     private AudioPlayerInterface audio_player;
+    private boolean isPaused = false; 
 
     /**
      * Initializes Controller, and instantiates the AnimationTimer needed for the
@@ -75,8 +71,43 @@ public class Controller {
 
         this.audio_player = new JMPAudioPlayer();
 
+        // Initialize auto-play timer
+        initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
+    }
+
+    /**
+     * Initialize the auto-play timer that checks if current track finished and plays next.
+     */
+    private void initializeAutoPlayTimer() {
+        this.autoPlayTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // Only auto-advance if NOT paused and playback stopped
+                if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
+                    if (audio_player.getCurrentTrack() != null) {
+                        String nextTrack = audio_player.nextTrack();
+                        if (nextTrack != null) {
+                            updatePlaylistDisplay();
+                        } else {
+                            // At the end of playlist, loop back to the beginning
+                            Playlist playlist = audio_player.getPlaylist();
+                            if (!playlist.isEmpty()) {
+                                // Reset to first track
+                                while (playlist.getCurrentIndex() > 0) {
+                                    playlist.getPreviousTrack();
+                                }
+                                audio_player.load(playlist.getCurrentTrack());
+                                audio_player.play();
+                                updatePlaylistDisplay();
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        autoPlayTimer.start();
     }
 
     /**
@@ -90,6 +121,8 @@ public class Controller {
         welcomeList.add("Welcome to JMD!");
         welcomeList.add("Hello this is JMD");
         welcomeList.add("JMD, hello this is tester");
+        welcomeList.add("Hello it is me JMD");
+        welcomeList.add("JMD but with an actual audio player");
         Collections.shuffle(welcomeList);
 
         welcomeText.setText(welcomeList.get(0));
@@ -106,17 +139,18 @@ public class Controller {
         if (playButton.getText().equals("Play")) {
             playButton.setText("Pause");
             statusLabel.setText("The media has started playing");
+            isPaused = false;
             this.audio_player.play();
         } else {
             playButton.setText("Play");
             statusLabel.setText("The media has stopped");
+            isPaused = true;
             this.audio_player.pause();
         }
     }
 
     // So far I have two ideas,
-    // one where replay just sets the timer all the way back to 00:00, might as well
-    // just be restart
+    // one where replay just sets the timer all the way back to 00:00, might as well just be restart
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
     public void replayClick(ActionEvent actionEvent) {
@@ -175,15 +209,19 @@ public class Controller {
             if (db.hasFiles()) {
                 for (var file : db.getFiles()) {
                     System.out.println("Dropped file: " + file.getAbsolutePath());
-                    // Optional: check if it’s an audio file by extension
+                    // Check if it's an audio file by extension
                     if (file.getName().endsWith(".mp3") || file.getName().endsWith(".wav")) {
                         System.out.println("Audio file detected!");
-                        this.audio_player.load(file.getAbsolutePath());
+                        this.audio_player.addToPlaylist(file.getAbsolutePath());
                     } else {
                         System.out.println("Audio file not detected!");
                     }
                 }
                 success = true;
+                updatePlaylistDisplay();
+                // Update button state to reflect that audio is loaded and playing
+                playButton.setText("Pause");
+                isPaused = false;
             }
             event.setDropCompleted(success);
             event.consume();
@@ -196,5 +234,76 @@ public class Controller {
             int vol = newValue.intValue();
             statusLabel.setText("Volume: " + vol + "%");
         });
+    }
+
+
+    /**
+     * Update the display to show current track information from playlist.
+     */
+    private void updatePlaylistDisplay() {
+        Playlist playlist = this.audio_player.getPlaylist();
+        if (!playlist.isEmpty()) {
+            String currentTrack = playlist.getCurrentTrack();
+            int currentIndex = playlist.getCurrentIndex();
+            int totalTracks = playlist.getSize();
+            playlistStatusLabel.setText("Now Playing: " + (currentIndex + 1) + "/" + totalTracks + " - " + 
+                    new java.io.File(currentTrack).getName());
+        } else {
+            playlistStatusLabel.setText("No tracks loaded");
+        }
+    }
+
+
+    //next track button, has a check to see if the next is empty
+    public void nextTrackClick(ActionEvent actionEvent) {
+        String nextTrack = this.audio_player.nextTrack();
+        if (nextTrack != null) {
+            updatePlaylistDisplay();
+        } else {
+            statusLabel.setText("No more tracks in playlist");
+        }
+    }
+
+    //next track, but reverse
+    public void previousTrackClick(ActionEvent actionEvent) {
+        String prevTrack = this.audio_player.previousTrack();
+        if (prevTrack != null) {
+            updatePlaylistDisplay();
+        } else {
+            statusLabel.setText("No previous tracks");
+        }
+    }
+
+    /**
+     * Remove the current track from the playlist.
+     */
+    public void removeTrackClick(ActionEvent actionEvent) {
+        Playlist playlist = this.audio_player.getPlaylist();
+        if (playlist.isEmpty()) {
+            statusLabel.setText("Playlist is empty");
+            return;
+        }
+        
+        int currentIndex = playlist.getCurrentIndex();
+        this.audio_player.pause();
+        playlist.removeTrack(currentIndex);
+        
+        if (playlist.isEmpty()) {
+            statusLabel.setText("Track removed - Playlist is now empty");
+            playButton.setText("Play");
+        } else {
+            updatePlaylistDisplay();
+            statusLabel.setText("Track removed");
+        }
+    }
+
+    /**
+     * Clear all tracks from the playlist.
+     */
+    public void clearPlaylistClick(ActionEvent actionEvent) {
+        this.audio_player.pause();
+        this.audio_player.getPlaylist().clear();
+        statusLabel.setText("Playlist cleared");
+        playButton.setText("Play");
     }
 }
