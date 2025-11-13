@@ -1,8 +1,6 @@
 package com.chili.java_media_player;
 
-/**
- * Interface for JMP AudioPlayer Classes
- */
+
 public interface AudioPlayerInterface {
     public void load(String audio);
 
@@ -22,7 +20,7 @@ public interface AudioPlayerInterface {
 
     public Playlist getPlaylist();
 
-    // public void setVolume(float volume);
+    public void setVolume(double volume);
 
     // public void removeFromQueue(float volume);
 }
