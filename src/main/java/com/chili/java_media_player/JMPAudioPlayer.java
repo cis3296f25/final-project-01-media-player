@@ -2,21 +2,18 @@ package com.chili.java_media_player;
 
 import java.nio.file.Paths;
 
-import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
-/**
- * Main class in charge of back-end audio functions.
- * Uses AudioClip to play audio tracks and supports playlist functionality.
- */
+
 public class JMPAudioPlayer implements AudioPlayerInterface {
 
-    private AudioClip player;
+    private MediaPlayer player;
     private String current_track_path;
     private final Playlist playlist;
+    private double currentVolume = 0.5; // Default volume at 50%
 
-    /**
-     * Initialize JMPAudioPlayer with an empty playlist.
-     */
+
     public JMPAudioPlayer() {
         this.playlist = new Playlist();
         this.player = null;
@@ -25,8 +22,16 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
 
     @Override
     public void load(String audio) {
-        this.player = new AudioClip(Paths.get(audio).toUri().toString());
+        // Stop previous player if exists
+        if (this.player != null) {
+            this.player.dispose();
+        }
+        
+        //Set volume
+        Media media = new Media(Paths.get(audio).toUri().toString());
+        this.player = new MediaPlayer(media);
         this.current_track_path = audio;
+        setVolume(currentVolume * 100);
     }
 
     @Override
@@ -53,7 +58,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         if (this.player == null) {
             return false;
         }
-        return this.player.isPlaying();
+        return this.player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
     @Override
@@ -69,9 +74,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public String nextTrack() {
         String nextTrackPath = this.playlist.getNextTrack();
         if (nextTrackPath != null) {
-            pause(); // Stop current track
             load(nextTrackPath);
-            play(); // Auto-play the next track
         }
         return nextTrackPath;
     }
@@ -80,9 +83,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public String previousTrack() {
         String previousTrackPath = this.playlist.getPreviousTrack();
         if (previousTrackPath != null) {
-            pause(); // Stop current track
             load(previousTrackPath);
-            play(); // Auto-play the previous track
         }
         return previousTrackPath;
     }
@@ -90,6 +91,24 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     @Override
     public Playlist getPlaylist() {
         return this.playlist;
+    }
+
+    @Override
+    public void setVolume(double volume) {
+        // Normalize volume from 0-100 range to 0.0-1.0 range
+        double normalizedVolume = Math.max(0.0, Math.min(1.0, volume / 100.0));
+        // Store the volume for future audio loads
+        this.currentVolume = normalizedVolume;
+        
+        // Apply volume to currently loaded audio
+        if (this.player != null) {
+            this.player.setVolume(normalizedVolume);
+        }
+    }
+
+    //needed for testing when getting volume
+    public double getCurrentVolume() {
+        return this.currentVolume;
     }
 }
 

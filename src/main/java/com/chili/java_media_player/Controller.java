@@ -19,10 +19,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * Controler to Hello View Screen
- * 
- **/
+
 public class Controller {
     @FXML
     public Button playButton;
@@ -46,13 +43,11 @@ public class Controller {
     private AnimationTimer autoPlayTimer;
     private long startTime;
     private AudioPlayerInterface audio_player;
-    private boolean isPaused = false; 
+    private boolean isPaused = false;
+    private long lastNavigationTime = 0; // Track when user last manually navigated
+    private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds 
 
-    /**
-     * Initializes Controller, and instantiates the AnimationTimer needed for the
-     * Progress Bar test.
-     * 
-     */
+
     @FXML
     private void initialize() {
         this.startTime = System.nanoTime();
@@ -77,31 +72,39 @@ public class Controller {
         initializeVolumeControl();
     }
 
-    /**
-     * Initialize the auto-play timer that checks if current track finished and plays next.
-     */
+
     private void initializeAutoPlayTimer() {
         this.autoPlayTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // Check if user recently navigated (debounce period)
+                long timeSinceNavigation = System.currentTimeMillis() - lastNavigationTime;
+                if (timeSinceNavigation < NAVIGATION_DEBOUNCE_MS) {
+                    return; // Skip auto-play during debounce period
+                }
+                
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
-                    if (audio_player.getCurrentTrack() != null) {
-                        String nextTrack = audio_player.nextTrack();
-                        if (nextTrack != null) {
-                            updatePlaylistDisplay();
-                        } else {
-                            // At the end of playlist, loop back to the beginning
-                            Playlist playlist = audio_player.getPlaylist();
-                            if (!playlist.isEmpty()) {
-                                // Reset to first track
-                                while (playlist.getCurrentIndex() > 0) {
-                                    playlist.getPreviousTrack();
-                                }
-                                audio_player.load(playlist.getCurrentTrack());
-                                audio_player.play();
-                                updatePlaylistDisplay();
+                    Playlist playlist = audio_player.getPlaylist();
+                    
+                    // Check if there's a next track
+                    if (playlist.hasNextTrack()) {
+                        // Advance playlist index
+                        playlist.getNextTrack();
+                        String trackPath = playlist.getCurrentTrack();
+                        audio_player.load(trackPath);
+                        audio_player.play();
+                        updatePlaylistDisplay();
+                    } else {
+                        // At the end of playlist, loop back to the beginning
+                        if (!playlist.isEmpty()) {
+                            // Reset to first track
+                            while (playlist.getCurrentIndex() > 0) {
+                                playlist.getPreviousTrack();
                             }
+                            audio_player.load(playlist.getCurrentTrack());
+                            audio_player.play();
+                            updatePlaylistDisplay();
                         }
                     }
                 }
@@ -110,9 +113,7 @@ public class Controller {
         autoPlayTimer.start();
     }
 
-    /**
-     * Event that occurs on button click.
-     */
+
     @FXML
     protected void onHelloButtonClick() {
 
@@ -230,16 +231,19 @@ public class Controller {
 
     @FXML
     private void initializeVolumeControl() {
+        // Set initial volume
+        audio_player.setVolume(volumeSlider.getValue());
+        
+        // Listen for volume slider changes
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            int vol = newValue.intValue();
-            statusLabel.setText("Volume: " + vol + "%");
+            double volume = newValue.doubleValue();
+            audio_player.setVolume(volume);
+            statusLabel.setText("Volume: " + (int)volume + "%");
         });
     }
 
 
-    /**
-     * Update the display to show current track information from playlist.
-     */
+
     private void updatePlaylistDisplay() {
         Playlist playlist = this.audio_player.getPlaylist();
         if (!playlist.isEmpty()) {
@@ -256,8 +260,12 @@ public class Controller {
 
     //next track button, has a check to see if the next is empty
     public void nextTrackClick(ActionEvent actionEvent) {
+        lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String nextTrack = this.audio_player.nextTrack();
         if (nextTrack != null) {
+            this.audio_player.play();
+            isPaused = false; 
+            playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
             statusLabel.setText("No more tracks in playlist");
@@ -266,17 +274,19 @@ public class Controller {
 
     //next track, but reverse
     public void previousTrackClick(ActionEvent actionEvent) {
+        lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String prevTrack = this.audio_player.previousTrack();
         if (prevTrack != null) {
+            this.audio_player.play();
+            isPaused = false; 
+            playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
             statusLabel.setText("No previous tracks");
         }
     }
 
-    /**
-     * Remove the current track from the playlist.
-     */
+
     public void removeTrackClick(ActionEvent actionEvent) {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist.isEmpty()) {
@@ -297,9 +307,6 @@ public class Controller {
         }
     }
 
-    /**
-     * Clear all tracks from the playlist.
-     */
     public void clearPlaylistClick(ActionEvent actionEvent) {
         this.audio_player.pause();
         this.audio_player.getPlaylist().clear();
