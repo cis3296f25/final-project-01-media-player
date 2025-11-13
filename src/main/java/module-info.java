@@ -13,7 +13,10 @@ module com.chili.java_media_player {
     requires javafx.graphics;
     requires java.desktop;
     requires javafx.media;
+    requires com.google.gson;
+    requires java.base;
 
     opens com.chili.java_media_player to javafx.fxml;
+    opens com.chili.java_media_player.settings to com.google.gson, javafx.fxml;
     exports com.chili.java_media_player;
 }
