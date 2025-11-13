@@ -218,7 +218,7 @@ public class Controller {
             // Create and store the stage if it's the first time
             if (aboutStage == null) {
                 aboutStage = new Stage();
-                aboutStage.setTitle("JMP Settings");
+                aboutStage.setTitle("About");
                 Scene scene = new Scene(root, 250, 140);
                 scene.getStylesheets()
                         .add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
