@@ -1,7 +1,5 @@
 package com.chili.java_media_player;
 
-import java.util.function.BooleanSupplier;
-
 /**
  * Interface for JMP AudioPlayer Classes
  */
@@ -15,6 +13,14 @@ public interface AudioPlayerInterface {
     public String getCurrentTrack();
 
     public boolean currentlyPlaying();
+
+    public void addToPlaylist(String audio);
+
+    public String nextTrack();
+
+    public String previousTrack();
+
+    public Playlist getPlaylist();
 
     // public void setVolume(float volume);
 
