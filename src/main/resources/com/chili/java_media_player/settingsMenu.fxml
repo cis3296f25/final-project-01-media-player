@@ -33,6 +33,7 @@
 -->
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -45,57 +46,66 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
-  <children>
-    <SplitPane focusTraversable="true" prefHeight="578.0" prefWidth="482.0" VBox.vgrow="ALWAYS">
-      <items>
-        <ScrollPane prefHeight="577.0" prefWidth="466.0">
-          <content>
-            <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="574.0" prefWidth="461.0">
-              <children>
-                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="Settings" textAlignment="CENTER" wrapText="false">
-                           <font>
-                      <Font size="18.0" fx:id="x1" />
-                           </font>
-                           <textFill>
-                      <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-                           </textFill></Label>
-                        <VBox layoutX="14.0" layoutY="41.0" prefHeight="522.0" prefWidth="435.0" style="-fx-padding: 10; -fx-spacing: 5;">
-                           <children>
-                              <CheckBox mnemonicParsing="false" text="Example Setting Checkbox 1">
-                                 <tooltip>
-                                    <Tooltip text="Example Setting Tooltip 1" />
-                                 </tooltip>
-                              </CheckBox>
-                              <CheckBox mnemonicParsing="false" text="Example Setting Checkbox 2">
-                                 <tooltip>
-                                    <Tooltip text="Example Setting Tooltip 2" />
-                                 </tooltip>
-                              </CheckBox>
-                           </children>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chili.java_media_player.settings.SettingsController">
+    <children>
+        <SplitPane dividerPositions="0.30120481927710846" focusTraversable="true" VBox.vgrow="ALWAYS">
+            <items>
+                <AnchorPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0">
+                    <children>
+                        <VBox layoutX="10.0" layoutY="10.0" prefWidth="140.0" spacing="5.0">
+                            <children>
+                                <Label styleClass="h1" text="General" />
+                                <Label text="Playback" />
+                            </children>
                         </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </ScrollPane>
-      </items>
-    </SplitPane>
-    <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
-      <children>
-        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
-          <font>
-            <Font size="11.0" fx:id="x3" />
-          </font>
-          <textFill>
-            <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
-          </textFill>
-        </Label>
-        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-        <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
-      </children>
-      <padding>
-        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-      </padding>
-    </HBox>
-  </children>
+                    </children>
+                </AnchorPane>
+                <ScrollPane fitToWidth="true" prefHeight="-1.0" prefWidth="-1.0">
+                    <content>
+                        <AnchorPane prefHeight="510.0" prefWidth="255.0">
+                            <children>
+                                <VBox layoutX="10.0" layoutY="10.0" prefWidth="320.0" spacing="10.0">
+                                    <children>
+                                        <Label styleClass="h1" text="Playback Settings" />
+                                        <CheckBox fx:id="exampleSetting1Checkbox" mnemonicParsing="false" text="Example Setting 1">
+                                            <tooltip>
+                                                <Tooltip text="Example Setting Tooltip 1" />
+                                            </tooltip>
+                                        </CheckBox>
+                                        <CheckBox fx:id="exampleSetting2Checkbox" mnemonicParsing="false" text="Example Setting 2">
+                                            <tooltip>
+                                                <Tooltip text="Example Setting Tooltip 2" />
+                                            </tooltip>
+                                        </CheckBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </ScrollPane>
+            </items>
+        </SplitPane>
+        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+            <children>
+                <Label fx:id="settingsStatusLabel" maxHeight="1.7976931348623157E308" maxWidth="-1.0" HBox.hgrow="ALWAYS">
+                    <font>
+                        <Font size="11.0" fx:id="x3" />
+                    </font>
+                    <textFill>
+                        <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
+                    </textFill>
+                </Label>
+                <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                <Label font="$x3" maxWidth="-1.0" textFill="$x4" HBox.hgrow="NEVER">
+                    <graphic>
+                        <Button fx:id="applyButton" mnemonicParsing="false" text="Apply" onAction="#onApplyClick" />
+                    </graphic>
+                </Label>
+                <Button fx:id="closeButton" mnemonicParsing="false" text="Close" onAction="#onCloseClick" />
+            </children>
+            <padding>
+                <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
+            </padding>
+        </HBox>
+    </children>
 </VBox>
