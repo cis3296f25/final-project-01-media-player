@@ -46,7 +46,9 @@ public class Controller {
     private AnimationTimer autoPlayTimer;
     private long startTime;
     private AudioPlayerInterface audio_player;
-    private boolean isPaused = false; 
+    private boolean isPaused = false;
+    private Stage settingsStage;
+    private Stage aboutStage;
 
     /**
      * Initializes Controller, and instantiates the AnimationTimer needed for the
@@ -170,25 +172,67 @@ public class Controller {
         statusLabel.setText("Closing file...");
     }
 
+    // Controller.java (Modified method)
     public void onSettingsPreferences(ActionEvent actionEvent) {
-        Parent root;
+        if (settingsStage != null && settingsStage.isShowing()) {
+            // If window is already open, bring it to focus
+            settingsStage.toFront();
+            statusLabel.setText("Settings window brought to front");
+            return;
+        }
+
         try {
-            root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("JMP Settings");
-            stage.setScene(new Scene(root, 550, 550));
-            stage.getScene().getStylesheets()
-                    .add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
-            stage.show();
-            stage.show();
+            Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
+
+            // 1. Create and store the stage if it's the first time
+            if (settingsStage == null) {
+                settingsStage = new Stage();
+                settingsStage.setTitle("JMP Settings");
+                Scene scene = new Scene(root, 550, 550);
+                scene.getStylesheets()
+                        .add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
+                settingsStage.setScene(scene);
+            }
+
+            // 2. Show the stage (or re-show if it was previously hidden/closed)
+            settingsStage.show();
+            statusLabel.setText("Settings window opened");
+
         } catch (IOException e) {
             e.printStackTrace();
+            statusLabel.setText("Error opening settings");
         }
-        statusLabel.setText("Saving settings...");
     }
 
     public void onSettingsAbout(ActionEvent actionEvent) {
-        statusLabel.setText("About");
+        // Check if the About window is already open and bring it to focus
+        if (aboutStage != null && aboutStage.isShowing()) {
+            aboutStage.toFront();
+            statusLabel.setText("About window brought to front");
+            return;
+        }
+
+        try {
+            Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("about.fxml"));
+
+            // Create and store the stage if it's the first time
+            if (aboutStage == null) {
+                aboutStage = new Stage();
+                aboutStage.setTitle("About");
+                Scene scene = new Scene(root, 250, 140);
+                scene.getStylesheets()
+                        .add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
+                aboutStage.setScene(scene);
+            }
+
+            // Show the stage
+            aboutStage.show();
+            statusLabel.setText("About window opened");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Error opening About window");
+        }
     }
 
     // Audio drop in detection, no functionality for now but detects .mp3 and .waw
