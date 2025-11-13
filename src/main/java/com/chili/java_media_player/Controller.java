@@ -43,7 +43,6 @@ public class Controller {
     @FXML
     private Slider volumeSlider;
 
-
     @FXML
     private Label welcomeText;
     @FXML
@@ -51,6 +50,7 @@ public class Controller {
 
     private AnimationTimer testProgressBarTimer;
     private long startTime;
+    private AudioPlayerInterface audio_player;
 
     /**
      * Initializes Controller, and instantiates the AnimationTimer needed for the
@@ -72,6 +72,9 @@ public class Controller {
             }
         };
         testProgressBarTimer.start();
+
+        this.audio_player = new JMPAudioPlayer();
+
         initializeAudio();
         initializeVolumeControl();
     }
@@ -92,31 +95,39 @@ public class Controller {
         welcomeText.setText(welcomeList.get(0));
 
     }
+
     @FXML
 
-    //DEBUG, FILL FUNCTION IN LATER
-    //STATUS LABEL IS JUST TO SHOW THAT THE ID LOADED IN hello-view.fxml CAN INTERACT WITH CONTROLLER
-    //NO FUNCTIONALITY, ONLY TEXT CHANGES FOR STATUS LABEL.
+    // DEBUG, FILL FUNCTION IN LATER
+    // STATUS LABEL IS JUST TO SHOW THAT THE ID LOADED IN hello-view.fxml CAN
+    // INTERACT WITH CONTROLLER
+    // NO FUNCTIONALITY, ONLY TEXT CHANGES FOR STATUS LABEL.
     public void onPlayClick(ActionEvent actionEvent) {
-        if (playButton.getText().equals("Play")){
+        if (playButton.getText().equals("Play")) {
             playButton.setText("Pause");
             statusLabel.setText("The media has started playing");
-        }
-        else{
+            this.audio_player.play();
+        } else {
             playButton.setText("Play");
             statusLabel.setText("The media has stopped");
+            this.audio_player.pause();
         }
     }
-    //So far I have two ideas,
-    // one where replay just sets the timer all the way back to 00:00, might as well just be restart
-    // two where it is a toggleable feature that detects if the timer has reached the audio file's max time and sets it back to zero
+
+    // So far I have two ideas,
+    // one where replay just sets the timer all the way back to 00:00, might as well
+    // just be restart
+    // two where it is a toggleable feature that detects if the timer has reached
+    // the audio file's max time and sets it back to zero
     public void replayClick(ActionEvent actionEvent) {
         statusLabel.setText("Replayed");
     }
-    //basic shuffle, play list must be implemented to work on this
+
+    // basic shuffle, play list must be implemented to work on this
     public void shuffleClick(ActionEvent actionEvent) {
         statusLabel.setText("Shuffled");
     }
+
     public void onFileOpen(ActionEvent actionEvent) {
         statusLabel.setText("Opening file...");
     }
@@ -132,10 +143,11 @@ public class Controller {
             Stage stage = new Stage();
             stage.setTitle("JMP Settings");
             stage.setScene(new Scene(root, 550, 550));
-            stage.getScene().getStylesheets().add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
+            stage.getScene().getStylesheets()
+                    .add(JavaMediaPlayer.class.getResource("style/settings.css").toExternalForm());
             stage.show();
             stage.show();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         statusLabel.setText("Saving settings...");
@@ -145,10 +157,10 @@ public class Controller {
         statusLabel.setText("About");
     }
 
-
-    //Audio drop in detection, no functionality for now but detects .mp3 and .waw
+    // Audio drop in detection, no functionality for now but detects .mp3 and .waw
     @FXML
     private StackPane dropArea;
+
     public void initializeAudio() {
         dropArea.setOnDragOver(event -> {
             if (event.getGestureSource() != dropArea && event.getDragboard().hasFiles()) {
@@ -166,8 +178,8 @@ public class Controller {
                     // Optional: check if it’s an audio file by extension
                     if (file.getName().endsWith(".mp3") || file.getName().endsWith(".wav")) {
                         System.out.println("Audio file detected!");
-                    }
-                    else{
+                        this.audio_player.load(file.getAbsolutePath());
+                    } else {
                         System.out.println("Audio file not detected!");
                     }
                 }
@@ -177,6 +189,7 @@ public class Controller {
             event.consume();
         });
     }
+
     @FXML
     private void initializeVolumeControl() {
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {

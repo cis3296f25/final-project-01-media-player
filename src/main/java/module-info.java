@@ -12,6 +12,7 @@ module com.chili.java_media_player {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
     requires java.desktop;
+    requires javafx.media;
 
     opens com.chili.java_media_player to javafx.fxml;
     exports com.chili.java_media_player;
