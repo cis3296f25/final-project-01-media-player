@@ -1,8 +1,12 @@
 # JMP
+
 JMP is a media player with an audio visualizer 
 
-
 # How to run
+## Mac 
+Download `mac.zip` from the latest release.
+Extract and run `mac\bin\app`
+
 ## Windows
 Download `windows.zip` from the latest release.
 Extract and run `bin\app.bat`
@@ -16,7 +20,16 @@ Extract and run `bin\app.bat`
 - What is expected to happen when the app start. 
 
 
-This is a project for 3296 Software Design.
+- Clone this repository with `git clone`
+- Preferably use IntelliJ for the most simple experience setting up the project 
+	- Open the local repository from the IDE 
+	- Click the build icon on the top righthand corner of the screen.
+	- Navigate to the `target\`
+- If you want to use the CLI instead.
+	- Navigate to the local repository from the command line. 
+	- in the root folder of the repository run: `./mvn javafx:jlink`
+	- this will compile the app file and create a zip in the `target\` folder
+
 PREREQUISITES:
 - openjdk21++
 - Maven
@@ -26,7 +39,3 @@ OPERATING SYSTEMS:
 - MacOS Sequoia 15.6.1
 PREFERED IDE
 - Intellij V21
-
-Run Instructions:
-- Install all prerequisite software
-- Run HelloApplication (for now)
