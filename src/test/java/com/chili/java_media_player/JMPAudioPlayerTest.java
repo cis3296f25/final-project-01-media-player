@@ -36,10 +36,11 @@ public class JMPAudioPlayerTest {
 
     // Does Playing work?
     @Test
-    void testPlay() {
+    void testPlay() throws InterruptedException{
         String audio_source_test = "src/test/java/resources/야생ｋｉｎｅｔｉｃ꿈 - icy constellations [2901409654].mp3";
         player.load(audio_source_test);
         player.play();
+        Thread.sleep(100);
         assertTrue(this.player.currentlyPlaying());
     }
 
