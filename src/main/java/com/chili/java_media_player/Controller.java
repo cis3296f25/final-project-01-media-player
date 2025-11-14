@@ -1,5 +1,6 @@
 package com.chili.java_media_player;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections; //imported here to add a shuffle, can remove later if shuffle not required
@@ -13,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 
@@ -23,7 +25,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import javax.swing.*;
 
@@ -42,8 +47,10 @@ public class Controller {
     public Label statusLabel;
     @FXML
     private Slider volumeSlider;
-
-
+    @FXML
+    private Label audioFileLabel;
+    @FXML
+    private ProgressIndicator progressIndicator;
     @FXML
     private Label welcomeText;
     @FXML
@@ -51,6 +58,10 @@ public class Controller {
 
     private AnimationTimer testProgressBarTimer;
     private long startTime;
+    MediaPlayer mediaPlayer;
+    String fileName = "";
+
+    private String mediaFile;
 
     /**
      * Initializes Controller, and instantiates the AnimationTimer needed for the
@@ -101,10 +112,12 @@ public class Controller {
         if (playButton.getText().equals("Play")){
             playButton.setText("Pause");
             statusLabel.setText("The media has started playing");
+            playSound(fileName);
         }
         else{
             playButton.setText("Play");
             statusLabel.setText("The media has stopped");
+            pauseSound();
         }
     }
     //So far I have two ideas,
@@ -163,6 +176,9 @@ public class Controller {
             if (db.hasFiles()) {
                 for (var file : db.getFiles()) {
                     System.out.println("Dropped file: " + file.getAbsolutePath());
+                    fileName = file.getAbsolutePath();
+
+                    audioFileLabel.setText(fileNameTruncate(fileName));
                     // Optional: check if it’s an audio file by extension
                     if (file.getName().endsWith(".mp3") || file.getName().endsWith(".wav")) {
                         System.out.println("Audio file detected!");
@@ -184,4 +200,24 @@ public class Controller {
             statusLabel.setText("Volume: " + vol + "%");
         });
     }
+
+    @FXML
+    private void playSound(String filename)
+    {
+        System.out.println("Playing audiofile: " + filename);
+        Media media = new Media(new File(filename).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        mediaPlayer.play();
+    }
+
+    @FXML
+    private void pauseSound()
+    {
+        Duration currentTime = mediaPlayer.getCurrentTime();
+        mediaPlayer.pause();
+    }
+
+    private String fileNameTruncate(String filename)
+        {return filename.substring(filename.lastIndexOf('/')+1);}
 }
