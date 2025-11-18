@@ -12,12 +12,20 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     private String current_track_path;
     private final Playlist playlist;
     private double currentVolume = 0.5; // Default volume at 50%
-
+    // Store the onEndOfMedia handler
+    private Runnable onTrackEndHandler;
 
     public JMPAudioPlayer() {
         this.playlist = new Playlist();
         this.player = null;
         this.current_track_path = null;
+    }
+
+    public void setOnTrackEnd(Runnable onTrackEnd) {
+        this.onTrackEndHandler = onTrackEnd;
+        if (this.player != null) {
+            this.player.setOnEndOfMedia(onTrackEnd);
+        }
     }
 
     @Override
@@ -26,12 +34,14 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         if (this.player != null) {
             this.player.dispose();
         }
-        
-        //Set volume
         Media media = new Media(Paths.get(audio).toUri().toString());
         this.player = new MediaPlayer(media);
         this.current_track_path = audio;
         setVolume(currentVolume * 100);
+        // Always set the onEndOfMedia handler if present
+        if (this.onTrackEndHandler != null) {
+            this.player.setOnEndOfMedia(this.onTrackEndHandler);
+        }
     }
 
     @Override

@@ -68,7 +68,28 @@ public class Controller {
 
         this.audio_player = new JMPAudioPlayer();
 
-        // Initialize auto-play timer
+        // Set up onEndOfMedia handler for autoplay
+        ((JMPAudioPlayer)this.audio_player).setOnTrackEnd(() -> {
+            Playlist playlist = audio_player.getPlaylist();
+            if (playlist.hasNextTrack()) {
+                lastNavigationTime = System.currentTimeMillis();
+                playlist.getNextTrack();
+                String trackPath = playlist.getCurrentTrack();
+                audio_player.load(trackPath);
+                audio_player.play();
+                updatePlaylistDisplay();
+            } else if (!playlist.isEmpty()) {
+                // Loop: reset to first track and play
+                lastNavigationTime = System.currentTimeMillis();
+                playlist.resetToFirstTrack();
+                String trackPath = playlist.getCurrentTrack();
+                audio_player.load(trackPath);
+                audio_player.play();
+                updatePlaylistDisplay();
+            }
+        });
+
+        // Initialize auto-play timer (for legacy/race fallback)
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
@@ -337,17 +358,44 @@ public class Controller {
             statusLabel.setText("Playlist is empty");
             return;
         }
-        
+
         int currentIndex = playlist.getCurrentIndex();
+        boolean wasPlaying = this.audio_player.currentlyPlaying();
         this.audio_player.pause();
         playlist.removeTrack(currentIndex);
-        
+        // Debounce: prevent autoplay/timer from bouncing after removal
+        lastNavigationTime = System.currentTimeMillis();
+
+        // Ensure current index is valid after removal
+        int newIndex = playlist.getCurrentIndex();
+        if (!playlist.isEmpty() && (newIndex < 0 || newIndex >= playlist.getSize())) {
+            // If index is out of bounds, set to last valid index
+            int lastIndex = playlist.getSize() - 1;
+            if (lastIndex >= 0) {
+                // Directly set currentIndex if possible, or use resetToFirstTrack if that's the only method
+                playlist.resetToFirstTrack();
+                // If more than one track, move to last
+                for (int i = 0; i < lastIndex; i++) {
+                    playlist.getNextTrack();
+                }
+            }
+        }
+
         if (playlist.isEmpty()) {
             statusLabel.setText("Track removed - Playlist is now empty");
             playButton.setText("Play");
         } else {
-            updatePlaylistDisplay();
-            statusLabel.setText("Track removed");
+            // Reload the current track and update UI
+            String trackPath = playlist.getCurrentTrack();
+            if (trackPath != null) {
+                this.audio_player.load(trackPath);
+                updatePlaylistDisplay();
+                statusLabel.setText("Track removed");
+                if (wasPlaying) {
+                    this.audio_player.play();
+                    playButton.setText("Pause");
+                }
+            }
         }
     }
 
