@@ -3,6 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -103,8 +104,8 @@
 
     <right>
         <VBox alignment="TOP_CENTER" spacing="12" style="-fx-padding: 8 10 8 10;" prefWidth="240">
-            <StackPane prefWidth="220" prefHeight="80" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: white;">
-                <Label text="Spectrogram(PLACEHOLDER)" style="-fx-font-size: 12; -fx-text-fill: #000000ff;" />
+            <StackPane prefWidth="220" prefHeight="80">
+                <Canvas fx:id="visualizerCanvas" width="220" height="80"/>
             </StackPane>
 
             <StackPane prefWidth="220" prefHeight="200" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: #f7f7f7;">
