@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PlaylistTest {
-
+    //Test is actually able to be done because playlist at it's core is basically an array list with some extra functions, there's indexes and stuff
+    //That's testable, I think. 
+    //Consider this; autoplay as a test is stupid, i have to create a separate damn audio player to even test that thing, I am not doing that.
     private Playlist playlist;
 
     @BeforeEach
@@ -17,7 +19,8 @@ public class PlaylistTest {
     }
 
 
-    //can it add a track?    @Test
+    //can it add a track?    
+    @Test
     public void testAddTrack() {
         playlist.addTrack("song1.mp3");
         assertEquals(1, playlist.getSize());
