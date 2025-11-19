@@ -3,6 +3,8 @@ package com.chili.java_media_player;
 import java.io.IOException;
 import java.util.List;
 
+import com.chili.java_media_player.visualizer.Visualizer;
+
 import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -10,13 +12,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 
 public class Controller {
     @FXML
@@ -34,44 +36,51 @@ public class Controller {
     @FXML
     private Slider volumeSlider;
 
-
-    //Potential work on for spectro, meta, credit, and playback functions
-    @FXML 
+    // Potential work on for spectro, meta, credit, and playback functions
+    @FXML
     private javafx.scene.layout.StackPane spectrogramBox;
-    @FXML 
+    @FXML
     private javafx.scene.control.Label spectrogramLabel;
-    @FXML 
+    @FXML
     private javafx.scene.layout.StackPane metaDataBox;
-    @FXML 
+    @FXML
     private javafx.scene.control.Label metaDataLabel;
-    @FXML 
+    @FXML
     private javafx.scene.layout.StackPane exportCreditsBox;
-    @FXML 
+    @FXML
     private javafx.scene.control.Label exportCreditsLabel;
-    @FXML 
+    @FXML
     private javafx.scene.layout.VBox playbackSpeedBox;
-    @FXML 
+    @FXML
     private javafx.scene.control.Label playbackSpeedLabel;
 
     @FXML
     private Label welcomeText;
+    // @FXML
+    // private ProgressIndicator testProgressBar;
+
+    @FXML
+    private Canvas visualizerCanvas;
+
+    private AnimationTimer testProgressBarTimer;
     private AnimationTimer autoPlayTimer;
     private AudioPlayerInterface audio_player;
     private boolean isPaused = false;
     private long lastNavigationTime = 0; // Track when user last manually navigated
-    private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds 
+    private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds
 
     private Stage settingsStage;
     private Stage aboutStage;
+    private Visualizer visualizer;
 
-
-    //I have no idea how this code works, it's not even being used but it is literally the backbone of everything in this code
-     @FXML
+    // I have no idea how this code works, it's not even being used but it is
+    // literally the backbone of everything in this code
+    @FXML
     private void initialize() {
 
         this.audio_player = new JMPAudioPlayer();
 
-        ((JMPAudioPlayer)this.audio_player).setOnTrackEnd(() -> {
+        ((JMPAudioPlayer) this.audio_player).setOnTrackEnd(() -> {
             Playlist playlist = audio_player.getPlaylist();
             if (playlist.hasNextTrack()) {
                 lastNavigationTime = System.currentTimeMillis();
@@ -93,8 +102,10 @@ public class Controller {
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
-    }
+        // this.visualizerCanvas = new Canvas();
+        this.visualizer = new Visualizer(audio_player, visualizerCanvas);
 
+    }
 
     private void initializeAutoPlayTimer() {
         this.autoPlayTimer = new AnimationTimer() {
@@ -105,11 +116,11 @@ public class Controller {
                 if (timeSinceNavigation < NAVIGATION_DEBOUNCE_MS) {
                     return; // Skip auto-play during debounce period
                 }
-                
+
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
                     Playlist playlist = audio_player.getPlaylist();
-                    
+
                     // Check if there's a next track
                     if (playlist.hasNextTrack()) {
                         // Advance playlist index
@@ -136,10 +147,7 @@ public class Controller {
         autoPlayTimer.start();
     }
 
-
-
     @FXML
-
 
     public void onPlayClick(ActionEvent actionEvent) {
         if (playButton.getText().equals("Play")) {
@@ -156,7 +164,8 @@ public class Controller {
     }
 
     // So far I have two ideas,
-    // one where replay just sets the timer all the way back to 00:00, might as well just be restart
+    // one where replay just sets the timer all the way back to 00:00, might as well
+    // just be restart
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
     public void replayClick(ActionEvent actionEvent) {
@@ -282,16 +291,14 @@ public class Controller {
     private void initializeVolumeControl() {
         // Set initial volume
         audio_player.setVolume(volumeSlider.getValue());
-        
+
         // Listen for volume slider changes
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double volume = newValue.doubleValue();
             audio_player.setVolume(volume);
-            statusLabel.setText("Volume: " + (int)volume + "%");
+            statusLabel.setText("Volume: " + (int) volume + "%");
         });
     }
-
-
 
     private void updatePlaylistDisplay() {
         Playlist playlist = this.audio_player.getPlaylist();
@@ -314,21 +321,20 @@ public class Controller {
             String currentTrack = playlist.getCurrentTrack();
             int currentIndex = playlist.getCurrentIndex();
             int totalTracks = playlist.getSize();
-            playlistStatusLabel.setText("Now Playing: " + (currentIndex + 1) + "/" + totalTracks + " - " + 
+            playlistStatusLabel.setText("Now Playing: " + (currentIndex + 1) + "/" + totalTracks + " - " +
                     new java.io.File(currentTrack).getName());
         } else {
             playlistStatusLabel.setText("No tracks loaded");
         }
     }
 
-
-    //next track button, has a check to see if the next is empty
+    // next track button, has a check to see if the next is empty
     public void nextTrackClick(ActionEvent actionEvent) {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String nextTrack = this.audio_player.nextTrack();
         if (nextTrack != null) {
             this.audio_player.play();
-            isPaused = false; 
+            isPaused = false;
             playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
@@ -336,20 +342,19 @@ public class Controller {
         }
     }
 
-    //next track, but reverse
+    // next track, but reverse
     public void previousTrackClick(ActionEvent actionEvent) {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String prevTrack = this.audio_player.previousTrack();
         if (prevTrack != null) {
             this.audio_player.play();
-            isPaused = false; 
+            isPaused = false;
             playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
             statusLabel.setText("No previous tracks");
         }
     }
-
 
     public void removeTrackClick(ActionEvent actionEvent) {
         Playlist playlist = this.audio_player.getPlaylist();
@@ -372,7 +377,8 @@ public class Controller {
             // If index is out of bounds, set to last valid index
             int lastIndex = playlist.getSize() - 1;
             if (lastIndex >= 0) {
-                // Directly set currentIndex if possible, or use resetToFirstTrack if that's the only method
+                // Directly set currentIndex if possible, or use resetToFirstTrack if that's the
+                // only method
                 playlist.resetToFirstTrack();
                 // If more than one track, move to last
                 for (int i = 0; i < lastIndex; i++) {
@@ -408,16 +414,12 @@ public class Controller {
         playButton.setText("Play");
     }
 
-   
-
-    //POTENTIAL STUFF FOR FUTURE UI ELEMENTS
+    // POTENTIAL STUFF FOR FUTURE UI ELEMENTS
     public void updateSpectrogram() {
     }
 
-
     public void updateMetaData() {
     }
-
 
     public void updateExportCredits() {
     }
