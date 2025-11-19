@@ -19,7 +19,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-
 public class Controller {
     @FXML
     public Button playButton;
@@ -45,7 +44,7 @@ public class Controller {
     private AudioPlayerInterface audio_player;
     private boolean isPaused = false;
     private long lastNavigationTime = 0; // Track when user last manually navigated
-    private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds 
+    private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds
 
     private Stage settingsStage;
     private Stage aboutStage;
@@ -74,7 +73,6 @@ public class Controller {
         initializeVolumeControl();
     }
 
-
     private void initializeAutoPlayTimer() {
         this.autoPlayTimer = new AnimationTimer() {
             @Override
@@ -84,11 +82,11 @@ public class Controller {
                 if (timeSinceNavigation < NAVIGATION_DEBOUNCE_MS) {
                     return; // Skip auto-play during debounce period
                 }
-                
+
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
                     Playlist playlist = audio_player.getPlaylist();
-                    
+
                     // Check if there's a next track
                     if (playlist.hasNextTrack()) {
                         // Advance playlist index
@@ -114,7 +112,6 @@ public class Controller {
         };
         autoPlayTimer.start();
     }
-
 
     @FXML
     protected void onHelloButtonClick() {
@@ -153,7 +150,8 @@ public class Controller {
     }
 
     // So far I have two ideas,
-    // one where replay just sets the timer all the way back to 00:00, might as well just be restart
+    // one where replay just sets the timer all the way back to 00:00, might as well
+    // just be restart
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
     public void replayClick(ActionEvent actionEvent) {
@@ -277,16 +275,14 @@ public class Controller {
     private void initializeVolumeControl() {
         // Set initial volume
         audio_player.setVolume(volumeSlider.getValue());
-        
+
         // Listen for volume slider changes
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double volume = newValue.doubleValue();
             audio_player.setVolume(volume);
-            statusLabel.setText("Volume: " + (int)volume + "%");
+            statusLabel.setText("Volume: " + (int) volume + "%");
         });
     }
-
-
 
     private void updatePlaylistDisplay() {
         Playlist playlist = this.audio_player.getPlaylist();
@@ -294,21 +290,20 @@ public class Controller {
             String currentTrack = playlist.getCurrentTrack();
             int currentIndex = playlist.getCurrentIndex();
             int totalTracks = playlist.getSize();
-            playlistStatusLabel.setText("Now Playing: " + (currentIndex + 1) + "/" + totalTracks + " - " + 
+            playlistStatusLabel.setText("Now Playing: " + (currentIndex + 1) + "/" + totalTracks + " - " +
                     new java.io.File(currentTrack).getName());
         } else {
             playlistStatusLabel.setText("No tracks loaded");
         }
     }
 
-
-    //next track button, has a check to see if the next is empty
+    // next track button, has a check to see if the next is empty
     public void nextTrackClick(ActionEvent actionEvent) {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String nextTrack = this.audio_player.nextTrack();
         if (nextTrack != null) {
             this.audio_player.play();
-            isPaused = false; 
+            isPaused = false;
             playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
@@ -316,13 +311,13 @@ public class Controller {
         }
     }
 
-    //next track, but reverse
+    // next track, but reverse
     public void previousTrackClick(ActionEvent actionEvent) {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String prevTrack = this.audio_player.previousTrack();
         if (prevTrack != null) {
             this.audio_player.play();
-            isPaused = false; 
+            isPaused = false;
             playButton.setText("Pause");
             updatePlaylistDisplay();
         } else {
@@ -330,18 +325,17 @@ public class Controller {
         }
     }
 
-
     public void removeTrackClick(ActionEvent actionEvent) {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist.isEmpty()) {
             statusLabel.setText("Playlist is empty");
             return;
         }
-        
+
         int currentIndex = playlist.getCurrentIndex();
         this.audio_player.pause();
         playlist.removeTrack(currentIndex);
-        
+
         if (playlist.isEmpty()) {
             statusLabel.setText("Track removed - Playlist is now empty");
             playButton.setText("Play");

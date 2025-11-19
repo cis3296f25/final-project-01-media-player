@@ -5,14 +5,12 @@ import java.nio.file.Paths;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-
 public class JMPAudioPlayer implements AudioPlayerInterface {
 
     private MediaPlayer player;
     private String current_track_path;
     private final Playlist playlist;
     private double currentVolume = 0.5; // Default volume at 50%
-
 
     public JMPAudioPlayer() {
         this.playlist = new Playlist();
@@ -26,8 +24,8 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         if (this.player != null) {
             this.player.dispose();
         }
-        
-        //Set volume
+
+        // Set volume
         Media media = new Media(Paths.get(audio).toUri().toString());
         this.player = new MediaPlayer(media);
         this.current_track_path = audio;
@@ -46,6 +44,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         if (this.player != null) {
             this.player.play();
         }
+
     }
 
     @Override
@@ -99,16 +98,15 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         double normalizedVolume = Math.max(0.0, Math.min(1.0, volume / 100.0));
         // Store the volume for future audio loads
         this.currentVolume = normalizedVolume;
-        
+
         // Apply volume to currently loaded audio
         if (this.player != null) {
             this.player.setVolume(normalizedVolume);
         }
     }
 
-    //needed for testing when getting volume
+    // needed for testing when getting volume
     public double getCurrentVolume() {
         return this.currentVolume;
     }
 }
-
