@@ -103,4 +103,11 @@ public class Playlist {
     public boolean isEmpty() {
         return tracks.isEmpty();
     }
+
+    // Reset playlist to first track
+    public void resetToFirstTrack() {
+        if (!tracks.isEmpty()) {
+            currentIndex = 0;
+        }
+    }
 }
