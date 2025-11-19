@@ -23,6 +23,8 @@ public interface AudioPlayerInterface {
 
     public void setVolume(double volume);
 
+    public void setSpeed(double speed);
+
     public void setSpectrumListener(Visualizer visualizer);
 
     // public void removeFromQueue(float volume);

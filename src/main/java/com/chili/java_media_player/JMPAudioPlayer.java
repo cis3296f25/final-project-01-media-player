@@ -13,6 +13,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     private String current_track_path;
     private final Playlist playlist;
     private double currentVolume = 0.5; // Default volume at 50%
+    private double currentSpeed = 1.0;
     // Store the onEndOfMedia handler
     private Runnable onTrackEndHandler;
     private Visualizer listener;
@@ -56,6 +57,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         setupSpectrum();
         this.current_track_path = audio;
         setVolume(currentVolume * 100);
+        setSpeed(currentSpeed);
         // Always set the onEndOfMedia handler if present
         if (this.onTrackEndHandler != null) {
             this.player.setOnEndOfMedia(this.onTrackEndHandler);
@@ -138,6 +140,13 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     // needed for testing when getting volume
     public double getCurrentVolume() {
         return this.currentVolume;
+    }
+
+    public void setSpeed(double speed) {
+        this.currentSpeed = speed;
+        if (this.player != null) {
+            this.player.setRate(speed);
+        }
     }
 
     @Override
