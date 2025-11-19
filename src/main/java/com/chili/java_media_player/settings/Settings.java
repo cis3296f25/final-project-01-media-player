@@ -16,9 +16,7 @@ public class Settings {
     // Actual Settings Fields
     // Volume is stored as a double (0.0 to 1.0)
     private double volume;
-    // Maps to Checkbox 1 in settings menu
     private boolean autoPlayNextTrack;
-    // Maps to Checkbox 2 in settings menu
     private boolean loopPlaylist;
     private boolean exampleSetting1;
     private boolean exampleSetting2;
