@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections; //imported here to add a shuffle, can remove later if shuffle not required
 import java.util.List;
 
+import com.chili.java_media_player.visualizer.Visualizer;
+
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -38,6 +41,9 @@ public class Controller {
     @FXML
     private ProgressIndicator testProgressBar;
 
+    @FXML
+    private Canvas visualizerCanvas;
+
     private AnimationTimer testProgressBarTimer;
     private AnimationTimer autoPlayTimer;
     private long startTime;
@@ -48,6 +54,7 @@ public class Controller {
 
     private Stage settingsStage;
     private Stage aboutStage;
+    private Visualizer visualizer;
 
     @FXML
     private void initialize() {
@@ -64,7 +71,6 @@ public class Controller {
             }
         };
         testProgressBarTimer.start();
-
         this.audio_player = new JMPAudioPlayer();
 
         // Set up onEndOfMedia handler for autoplay
@@ -92,6 +98,9 @@ public class Controller {
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
+        // this.visualizerCanvas = new Canvas();
+        this.visualizer = new Visualizer(audio_player, visualizerCanvas);
+
     }
 
     private void initializeAutoPlayTimer() {

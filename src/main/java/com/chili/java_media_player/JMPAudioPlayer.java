@@ -2,6 +2,8 @@ package com.chili.java_media_player;
 
 import java.nio.file.Paths;
 
+import com.chili.java_media_player.visualizer.Visualizer;
+
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -13,11 +15,27 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     private double currentVolume = 0.5; // Default volume at 50%
     // Store the onEndOfMedia handler
     private Runnable onTrackEndHandler;
+    private Visualizer listener;
+
+    // private SpectrumDataListener listener;
 
     public JMPAudioPlayer() {
         this.playlist = new Playlist();
         this.player = null;
         this.current_track_path = null;
+
+    }
+
+    /**
+     * Links this Audio Player to the Visualizer Class so that it can recieve
+     * waveform data whenever it is generated
+     */
+    private void setupSpectrum() {
+        player.setAudioSpectrumListener((ts, dur, mags, phases) -> {
+            if (listener != null) {
+                listener.onSpectrum(ts, dur, mags, phases);
+            }
+        });
     }
 
     public void setOnTrackEnd(Runnable onTrackEnd) {
@@ -35,6 +53,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         }
         Media media = new Media(Paths.get(audio).toUri().toString());
         this.player = new MediaPlayer(media);
+        setupSpectrum();
         this.current_track_path = audio;
         setVolume(currentVolume * 100);
         // Always set the onEndOfMedia handler if present
@@ -119,5 +138,11 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     // needed for testing when getting volume
     public double getCurrentVolume() {
         return this.currentVolume;
+    }
+
+    @Override
+    public void setSpectrumListener(Visualizer visualizer) {
+        // TODO Auto-generated method stub
+        this.listener = visualizer;
     }
 }
