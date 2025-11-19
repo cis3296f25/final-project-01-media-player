@@ -1,5 +1,6 @@
 module com.chili.java_media_player {
-    requires javafx.controls;
+    requires transitive javafx.controls;
+    requires transitive javafx.base;
     requires javafx.fxml;
     requires javafx.web;
 

@@ -28,8 +28,10 @@ public class Playlist {
             throw new IndexOutOfBoundsException("Invalid track index: " + index);
         }
         tracks.remove(index);
-        
-        if (index < currentIndex) {
+
+        if (tracks.isEmpty()) {
+            currentIndex = -1;
+        } else if (index < currentIndex) {
             currentIndex--;
         } else if (index == currentIndex) {
             if (currentIndex >= tracks.size()) {

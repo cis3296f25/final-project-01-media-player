@@ -1,13 +1,12 @@
 package com.chili.java_media_player;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections; //imported here to add a shuffle, can remove later if shuffle not required
 import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,13 +15,14 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Controller {
+    @FXML
+    private javafx.scene.control.ListView<String> playlistListView;
     @FXML
     public Button playButton;
     @FXML
@@ -36,17 +36,34 @@ public class Controller {
     @FXML
     private Slider volumeSlider;
 
+    // Potential work on for spectro, meta, credit, and playback functions
+    @FXML
+    private javafx.scene.layout.StackPane spectrogramBox;
+    @FXML
+    private javafx.scene.control.Label spectrogramLabel;
+    @FXML
+    private javafx.scene.layout.StackPane metaDataBox;
+    @FXML
+    private javafx.scene.control.Label metaDataLabel;
+    @FXML
+    private javafx.scene.layout.StackPane exportCreditsBox;
+    @FXML
+    private javafx.scene.control.Label exportCreditsLabel;
+    @FXML
+    private javafx.scene.layout.VBox playbackSpeedBox;
+    @FXML
+    private javafx.scene.control.Label playbackSpeedLabel;
+
     @FXML
     private Label welcomeText;
-    @FXML
-    private ProgressIndicator testProgressBar;
+    // @FXML
+    // private ProgressIndicator testProgressBar;
 
     @FXML
     private Canvas visualizerCanvas;
 
     private AnimationTimer testProgressBarTimer;
     private AnimationTimer autoPlayTimer;
-    private long startTime;
     private AudioPlayerInterface audio_player;
     private boolean isPaused = false;
     private long lastNavigationTime = 0; // Track when user last manually navigated
@@ -56,24 +73,13 @@ public class Controller {
     private Stage aboutStage;
     private Visualizer visualizer;
 
+    // I have no idea how this code works, it's not even being used but it is
+    // literally the backbone of everything in this code
     @FXML
     private void initialize() {
-        this.startTime = System.nanoTime();
 
-        this.testProgressBarTimer = new AnimationTimer() {
-
-            @Override
-            public void handle(long now) {
-                double elapsedSeconds = (now - startTime) / 1_000_000_000.0;
-                double progress = (elapsedSeconds % 5) / 5.0; // Loops every 5 seconds
-                testProgressBar.setProgress(progress);
-                // testProgressBar.setProgress(now(double));
-            }
-        };
-        testProgressBarTimer.start();
         this.audio_player = new JMPAudioPlayer();
 
-        // Set up onEndOfMedia handler for autoplay
         ((JMPAudioPlayer) this.audio_player).setOnTrackEnd(() -> {
             Playlist playlist = audio_player.getPlaylist();
             if (playlist.hasNextTrack()) {
@@ -84,7 +90,6 @@ public class Controller {
                 audio_player.play();
                 updatePlaylistDisplay();
             } else if (!playlist.isEmpty()) {
-                // Loop: reset to first track and play
                 lastNavigationTime = System.currentTimeMillis();
                 playlist.resetToFirstTrack();
                 String trackPath = playlist.getCurrentTrack();
@@ -94,7 +99,6 @@ public class Controller {
             }
         });
 
-        // Initialize auto-play timer (for legacy/race fallback)
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
@@ -144,27 +148,7 @@ public class Controller {
     }
 
     @FXML
-    protected void onHelloButtonClick() {
 
-        List<String> welcomeList = new ArrayList<>();
-        welcomeList.add("Welcome to Java Media Player & Visualizer!");
-        welcomeList.add("Welcome to JMD!");
-        welcomeList.add("Hello this is JMD");
-        welcomeList.add("JMD, hello this is tester");
-        welcomeList.add("Hello it is me JMD");
-        welcomeList.add("JMD but with an actual audio player");
-        Collections.shuffle(welcomeList);
-
-        welcomeText.setText(welcomeList.get(0));
-
-    }
-
-    @FXML
-
-    // DEBUG, FILL FUNCTION IN LATER
-    // STATUS LABEL IS JUST TO SHOW THAT THE ID LOADED IN hello-view.fxml CAN
-    // INTERACT WITH CONTROLLER
-    // NO FUNCTIONALITY, ONLY TEXT CHANGES FOR STATUS LABEL.
     public void onPlayClick(ActionEvent actionEvent) {
         if (playButton.getText().equals("Play")) {
             playButton.setText("Pause");
@@ -198,7 +182,9 @@ public class Controller {
     }
 
     public void onFileExit(ActionEvent actionEvent) {
-        statusLabel.setText("Closing file...");
+        statusLabel.setText("Exiting...");
+        Platform.exit();
+        System.exit(0);
     }
 
     // Controller.java (Modified method)
@@ -316,6 +302,21 @@ public class Controller {
 
     private void updatePlaylistDisplay() {
         Playlist playlist = this.audio_player.getPlaylist();
+        // Update the ListView with the current playlist
+        if (playlistListView != null) {
+            playlistListView.getItems().clear();
+            List<String> tracks = playlist.getAllTracks();
+            for (int i = 0; i < tracks.size(); i++) {
+                String name = new java.io.File(tracks.get(i)).getName();
+                playlistListView.getItems().add((i + 1) + ". " + name);
+            }
+            // Highlight the current track
+            int currentIndex = playlist.getCurrentIndex();
+            if (currentIndex >= 0 && currentIndex < playlistListView.getItems().size()) {
+                playlistListView.getSelectionModel().select(currentIndex);
+                playlistListView.scrollTo(currentIndex);
+            }
+        }
         if (!playlist.isEmpty()) {
             String currentTrack = playlist.getCurrentTrack();
             int currentIndex = playlist.getCurrentIndex();
@@ -359,6 +360,7 @@ public class Controller {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist.isEmpty()) {
             statusLabel.setText("Playlist is empty");
+            updatePlaylistDisplay();
             return;
         }
 
@@ -386,6 +388,7 @@ public class Controller {
         }
 
         if (playlist.isEmpty()) {
+            updatePlaylistDisplay();
             statusLabel.setText("Track removed - Playlist is now empty");
             playButton.setText("Play");
         } else {
@@ -406,7 +409,18 @@ public class Controller {
     public void clearPlaylistClick(ActionEvent actionEvent) {
         this.audio_player.pause();
         this.audio_player.getPlaylist().clear();
+        updatePlaylistDisplay();
         statusLabel.setText("Playlist cleared");
         playButton.setText("Play");
+    }
+
+    // POTENTIAL STUFF FOR FUTURE UI ELEMENTS
+    public void updateSpectrogram() {
+    }
+
+    public void updateMetaData() {
+    }
+
+    public void updateExportCredits() {
     }
 }
