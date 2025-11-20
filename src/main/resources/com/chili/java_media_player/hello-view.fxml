@@ -105,6 +105,9 @@
 
     <right>
         <VBox alignment="TOP_CENTER" spacing="12" style="-fx-padding: 8 10 8 10;" prefWidth="240">
+            <StackPane prefWidth="220" prefHeight="80">
+                <Canvas fx:id="visualizerCanvas" width="220" height="80"/>
+            </StackPane>
             <StackPane prefWidth="220" prefHeight="220" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: #333333;">
                 <ImageView fx:id="albumArtView" fitWidth="216" fitHeight="216" pickOnBounds="true" preserveRatio="true"/>
             </StackPane>

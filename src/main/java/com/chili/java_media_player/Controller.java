@@ -1,6 +1,7 @@
 package com.chili.java_media_player;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
@@ -129,6 +130,9 @@ public class Controller {
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
+        initializeSpeedControl();
+        // this.visualizerCanvas = new Canvas();
+        this.visualizer = new Visualizer(audio_player, visualizerCanvas);
     }
 
     private void initializeAutoPlayTimer() {
@@ -477,60 +481,67 @@ public class Controller {
             }
         });
 
-        // ==== Metadata ====
+        // ==== Metadata List View ====
+        List<String> formattedMetadata = processMetadataForDisplay(metadata);
+
+        // Update UI
+        Platform.runLater(() -> {
+            metaDataListView.getItems().clear();
+            metaDataListView.getItems().addAll(formattedMetadata);
+        });
+    }
+
+
+    public List<String> processMetadataForDisplay(ObservableMap<String, Object> metadata) {
+        List<String> formattedList = new ArrayList<>();
+
+        if (metadata == null) {
+            formattedList.add("No Metadata Available");
+            return formattedList;
+        }
 
         // Define the list of fields to display: [Display Label, JavaFX Key]
-        // Made this way to be easy to add more options if needed
         String[][] fieldsToDisplay = {
                 {"Artist: ", "artist"},
                 {"Track Title: ", "title"},
                 {"Album: ", "album"},
                 {"Date: ", "year"},
-                {"Track Number: ", "track number"},
+                {"Track Number: ", "track"},
                 {"Comment: ", "comment-0"}
         };
 
-        ObservableList<String> items = metaDataListView.getItems();
-        items.clear();
 
-        if (metadata == null || metadata.isEmpty()) {
-            // case for if there is literally no metadata at all
-            // dont know if its actually possible in an mp3 file
-            items.add("No Metadata Available");
-        } else {
-            for (String[] field : fieldsToDisplay) {
-                String label = field[0];
-                String key = field[1];
-                String value = "";
-                // Get value or an empty string if missing
-                Object tempValue = metadata.get(key);
-                if (tempValue != null) {
-                    // Special handling for numerical values
-                    if (tempValue instanceof Number) {
-                        value = String.valueOf(tempValue);
-                    }
-                    value = tempValue.toString();
-                } else {
-                    value = ""; // empty value if theres no metadata
-                }
-
-                // Hack to deal with the language options in comments
-                // will only remove the first one if theres multiple languages (rare)
-                // old itunes mp3s are bugged out
-                if (key == "comment-0") {
-                    // matches if string starts with "[eng]=", the "eng" can be any 3 chars
-                    String regex = "^\\[.{3}\\]=.*";
-                    if (java.util.regex.Pattern.matches(regex, value)) {
-                        // The prefix is 5 characters long: [ + 3 chars + ] + =
-                        value = value.substring(6);
-                    }
-                }
-
-
-                // Format: "Key: Value" (e.g., "Artist: John Jones")
-                String displayString = label + value;
-                items.add(displayString);
+        for (String[] field : fieldsToDisplay) {
+            String label = field[0];
+            String key = field[1];
+            String value = "";
+            // Get value or an empty string if missing
+            Object tempValue = metadata.get(key);
+            if (tempValue != null) {
+                // Special handling for numerical values and general toString
+                value = tempValue.toString();
+            } else {
+                value = ""; // empty value if there's no metadata
             }
+
+            // Hack to deal with the language options in comments
+            // will only remove the first one if there's multiple languages (rare)
+            // old itunes mp3s are bugged out
+            if (key.equals("comment-0")) {
+                // matches if string starts with "[eng]=", the "eng" can be any 3 chars
+                String regex = "^\\[.{3}\\]=.*";
+                if (java.util.regex.Pattern.matches(regex, value)) {
+                    // The prefix is 5 characters long: [ + 3 chars + ] + =
+                    value = value.substring(6);
+                }
+            }
+
+
+            // Format: "Key: Value" (e.g., "Artist: John Jones")
+            String displayString = label + value;
+            formattedList.add(displayString);
         }
+
+        return formattedList;
     }
 }
