@@ -35,6 +35,8 @@ public class Controller {
     public Label playlistStatusLabel;
     @FXML
     private Slider volumeSlider;
+    @FXML
+    private Slider speedSlider;
 
     // Potential work on for spectro, meta, credit, and playback functions
     @FXML
@@ -102,6 +104,7 @@ public class Controller {
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
+        initializeSpeedControl();
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
 
@@ -297,6 +300,16 @@ public class Controller {
             double volume = newValue.doubleValue();
             audio_player.setVolume(volume);
             statusLabel.setText("Volume: " + (int) volume + "%");
+        });
+    }
+
+    @FXML
+    private void initializeSpeedControl() {
+        audio_player.setSpeed(speedSlider.getValue());
+
+        speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            double speed = newValue.doubleValue();
+            audio_player.setSpeed(speed);
         });
     }
 
