@@ -523,7 +523,6 @@ public class Controller {
                     if (java.util.regex.Pattern.matches(regex, value)) {
                         // The prefix is 5 characters long: [ + 3 chars + ] + =
                         value = value.substring(6);
-                        System.out.println(value);
                     }
                 }
 
