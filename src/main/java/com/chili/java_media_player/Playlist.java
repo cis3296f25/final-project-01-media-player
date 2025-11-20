@@ -1,7 +1,9 @@
 package com.chili.java_media_player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 //Playlist java class to manage audio play list, similar structure to JMPAudioPlayer
 public class Playlist {
@@ -110,6 +112,21 @@ public class Playlist {
     public void resetToFirstTrack() {
         if (!tracks.isEmpty()) {
             currentIndex = 0;
+        }
+    }
+
+    /**
+     * Shuffle the playlist deterministically using the provided seed.
+     * After shuffling, the current index is reset to the first track (0) or -1 if empty.
+     *
+     * @param seed seed for the random generator used to shuffle
+     */
+    public void shuffle(long seed) {
+        Collections.shuffle(this.tracks, new Random(seed));
+        if (this.tracks.isEmpty()) {
+            this.currentIndex = -1;
+        } else {
+            this.currentIndex = 0;
         }
     }
 }
