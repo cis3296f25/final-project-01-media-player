@@ -2,6 +2,7 @@ package com.chili.java_media_player;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
@@ -202,7 +203,43 @@ public class Controller {
 
     // basic shuffle, play list must be implemented to work on this
     public void shuffleClick(ActionEvent actionEvent) {
-        statusLabel.setText("Shuffled");
+        Playlist playlist = this.audio_player.getPlaylist();
+        if (playlist == null || playlist.isEmpty() || playlist.getSize() < 2) {
+            statusLabel.setText("Not enough tracks to shuffle");
+            return;
+        }
+        // Shuffle the playlist and reset current position to the first track
+        boolean wasPlaying = this.audio_player.currentlyPlaying();
+
+        List<String> tracks = playlist.getAllTracks();
+        Collections.shuffle(tracks);
+
+        // Rebuild playlist in-place
+        playlist.clear();
+        for (String t : tracks) {
+            playlist.addTrack(t);
+        }
+
+        // Reset to first track
+        playlist.resetToFirstTrack();
+
+        // Debounce navigation so autoplay doesn't immediately advance
+        lastNavigationTime = System.currentTimeMillis();
+
+        // Update UI
+        updatePlaylistDisplay();
+        statusLabel.setText("Playlist shuffled and reset to first track");
+
+        // If it was playing, load and play the first track
+        if (wasPlaying) {
+            String nowCurrent = playlist.getCurrentTrack();
+            if (nowCurrent != null) {
+                this.audio_player.load(nowCurrent);
+                this.audio_player.play();
+                playButton.setText("Pause");
+                isPaused = false;
+            }
+        }
     }
 
     public void onFileOpen(ActionEvent actionEvent) {
