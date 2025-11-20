@@ -2,6 +2,8 @@ package com.chili.java_media_player;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.scene.media.Media;
+
 public interface AudioPlayerInterface {
     public void load(String audio);
 
@@ -28,4 +30,8 @@ public interface AudioPlayerInterface {
     public void setSpectrumListener(Visualizer visualizer);
 
     // public void removeFromQueue(float volume);
+
+    public void setMetadataListener(javafx.collections.MapChangeListener<String, Object> listener);
+
+    public Media media = null;
 }

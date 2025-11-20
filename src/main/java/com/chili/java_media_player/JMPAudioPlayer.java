@@ -16,6 +16,8 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     private double currentSpeed = 1.0;
     // Store the onEndOfMedia handler
     private Runnable onTrackEndHandler;
+    public Media media;
+    private javafx.collections.MapChangeListener<String, Object> metadataListener;
     private Visualizer listener;
 
     // private SpectrumDataListener listener;
@@ -50,9 +52,13 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public void load(String audio) {
         // Stop previous player if exists
         if (this.player != null) {
+            // Remove listener from old media obj
+            if (this.media != null && this.metadataListener != null) {
+                this.media.getMetadata().removeListener(this.metadataListener);
+            }
             this.player.dispose();
         }
-        Media media = new Media(Paths.get(audio).toUri().toString());
+        this.media = new Media(Paths.get(audio).toUri().toString());
         this.player = new MediaPlayer(media);
         setupSpectrum();
         this.current_track_path = audio;
@@ -61,6 +67,9 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         // Always set the onEndOfMedia handler if present
         if (this.onTrackEndHandler != null) {
             this.player.setOnEndOfMedia(this.onTrackEndHandler);
+        }
+        if (this.metadataListener != null) {
+            this.media.getMetadata().addListener(this.metadataListener);
         }
     }
 
@@ -76,7 +85,6 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         if (this.player != null) {
             this.player.play();
         }
-
     }
 
     @Override
@@ -141,6 +149,16 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public double getCurrentVolume() {
         return this.currentVolume;
     }
+
+    @Override
+    public void setMetadataListener(javafx.collections.MapChangeListener<String, Object> listener) {
+        this.metadataListener = listener;
+        // Apply to current player if exists (although load() should handle it)
+        if (this.media != null && this.metadataListener != null) {
+            this.media.getMetadata().addListener(this.metadataListener);
+        }
+    }
+
 
     public void setSpeed(double speed) {
         this.currentSpeed = speed;
