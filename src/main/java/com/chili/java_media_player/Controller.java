@@ -5,8 +5,11 @@ import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
 import javafx.application.Platform;
+import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +18,15 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 public class Controller {
     @FXML
@@ -55,6 +63,13 @@ public class Controller {
     private javafx.scene.layout.VBox playbackSpeedBox;
     @FXML
     private javafx.scene.control.Label playbackSpeedLabel;
+    @FXML
+    private ImageView albumArtView;
+    @FXML
+    private Label albumArtPlaceholder;
+    @FXML
+    private ListView<String> metaDataListView;
+
 
     @FXML
     private Label welcomeText;
@@ -101,13 +116,19 @@ public class Controller {
             }
         });
 
+        MapChangeListener<String, Object> metadataListener = change -> {
+            // check if media is loaded before trying to get its metadata map
+            javafx.scene.media.Media currentMedia = ((JMPAudioPlayer) this.audio_player).media;
+
+            if (currentMedia != null) {
+                // Runs whenever a track changes (or more specifically if the metadata changes)
+                updateMetaDataDisplay(currentMedia.getMetadata());
+            }
+        };
+        this.audio_player.setMetadataListener(metadataListener);
         initializeAutoPlayTimer();
         initializeAudio();
         initializeVolumeControl();
-        initializeSpeedControl();
-        // this.visualizerCanvas = new Canvas();
-        this.visualizer = new Visualizer(audio_player, visualizerCanvas);
-
     }
 
     private void initializeAutoPlayTimer() {
@@ -435,5 +456,81 @@ public class Controller {
     }
 
     public void updateExportCredits() {
+    }
+
+    /*
+    *   Controller function for the metadata and album art
+    **/
+    public void updateMetaDataDisplay(ObservableMap<String, Object> metadata) {
+        // ==== Album Art ====
+        Platform.runLater(() -> {
+            if (metadata != null && metadata.containsKey("image")) {
+                // The "image" key returns an Image object
+                Image albumArt = (Image) metadata.get("image");
+                if (albumArt != null) {
+                    albumArtView.setImage(albumArt);
+                } else {
+                    albumArtView.setImage(null);
+                }
+            } else {
+                albumArtView.setImage(null);
+            }
+        });
+
+        // ==== Metadata ====
+
+        // Define the list of fields to display: [Display Label, JavaFX Key]
+        // Made this way to be easy to add more options if needed
+        String[][] fieldsToDisplay = {
+                {"Artist: ", "artist"},
+                {"Track Title: ", "title"},
+                {"Album: ", "album"},
+                {"Date: ", "year"},
+                {"Track Number: ", "track number"},
+                {"Comment: ", "comment-0"}
+        };
+
+        ObservableList<String> items = metaDataListView.getItems();
+        items.clear();
+
+        if (metadata == null || metadata.isEmpty()) {
+            // case for if there is literally no metadata at all
+            // dont know if its actually possible in an mp3 file
+            items.add("No Metadata Available");
+        } else {
+            for (String[] field : fieldsToDisplay) {
+                String label = field[0];
+                String key = field[1];
+                String value = "";
+                // Get value or an empty string if missing
+                Object tempValue = metadata.get(key);
+                if (tempValue != null) {
+                    // Special handling for numerical values
+                    if (tempValue instanceof Number) {
+                        value = String.valueOf(tempValue);
+                    }
+                    value = tempValue.toString();
+                } else {
+                    value = ""; // empty value if theres no metadata
+                }
+
+                // Hack to deal with the language options in comments
+                // will only remove the first one if theres multiple languages (rare)
+                // old itunes mp3s are bugged out
+                if (key == "comment-0") {
+                    // matches if string starts with "[eng]=", the "eng" can be any 3 chars
+                    String regex = "^\\[.{3}\\]=.*";
+                    if (java.util.regex.Pattern.matches(regex, value)) {
+                        // The prefix is 5 characters long: [ + 3 chars + ] + =
+                        value = value.substring(6);
+                    }
+                }
+
+
+                // Format: "Key: Value" (e.g., "Artist: John Jones")
+                String displayString = label + value;
+                items.add(displayString);
+            }
+        }
     }
 }
