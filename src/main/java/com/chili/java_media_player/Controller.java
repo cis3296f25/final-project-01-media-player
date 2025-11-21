@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
-import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
-import javafx.collections.MapChangeListener; //imported here to add a shuffle, can remove later if shuffle not required
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
+import javafx.application.Platform;
+import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,11 +22,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 
 public class Controller {
@@ -84,6 +85,8 @@ public class Controller {
     private AnimationTimer autoPlayTimer;
     private AudioPlayerInterface audio_player;
     private boolean isPaused = false;
+    // replayOn: when true, auto-play is disabled and replay behaviour is active
+    private boolean replayOn = false;
     private long lastNavigationTime = 0; // Track when user last manually navigated
     private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds
 
@@ -100,6 +103,18 @@ public class Controller {
 
         ((JMPAudioPlayer) this.audio_player).setOnTrackEnd(() -> {
             Playlist playlist = audio_player.getPlaylist();
+            // If replay mode is ON, restart the same track instead of advancing
+            if (replayOn) {
+                lastNavigationTime = System.currentTimeMillis();
+                String trackPath = playlist.getCurrentTrack();
+                if (trackPath != null) {
+                    audio_player.load(trackPath);
+                    audio_player.play();
+                    updatePlaylistDisplay();
+                }
+                return;
+            }
+
             if (playlist.hasNextTrack()) {
                 lastNavigationTime = System.currentTimeMillis();
                 playlist.getNextTrack();
@@ -131,6 +146,10 @@ public class Controller {
         initializeAudio();
         initializeVolumeControl();
         initializeSpeedControl();
+        // Ensure replay button reflects default state
+        if (replayButton != null) {
+            replayButton.setText("Replay: Off");
+        }
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
     }
@@ -139,6 +158,10 @@ public class Controller {
         this.autoPlayTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // If replay toggle is enabled, auto-advance should be disabled
+                if (replayOn) {
+                    return;
+                }
                 // Check if user recently navigated (debounce period)
                 long timeSinceNavigation = System.currentTimeMillis() - lastNavigationTime;
                 if (timeSinceNavigation < NAVIGATION_DEBOUNCE_MS) {
@@ -197,7 +220,17 @@ public class Controller {
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
     public void replayClick(ActionEvent actionEvent) {
-        statusLabel.setText("Replayed");
+        // Toggle replay mode. When replay is ON, auto-play is disabled.
+        replayOn = !replayOn;
+        if (replayOn) {
+            replayButton.setText("Replay: On");
+            statusLabel.setText("Replay enabled — autoplay disabled");
+        } else {
+            replayButton.setText("Replay: Off");
+            // debounce so autoplay doesn't immediately trigger after turning it back on
+            lastNavigationTime = System.currentTimeMillis();
+            statusLabel.setText("Replay disabled — autoplay enabled");
+        }
     }
 
     // basic shuffle, play list must be implemented to work on this
@@ -251,6 +284,7 @@ public class Controller {
         System.exit(0);
     }
 
+    // Controller.java (Modified method)
     public void onSettingsPreferences(ActionEvent actionEvent) {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
@@ -262,7 +296,7 @@ public class Controller {
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
 
-            // Create and store the stage if it's the first time
+            // 1. Create and store the stage if it's the first time
             if (settingsStage == null) {
                 settingsStage = new Stage();
                 settingsStage.setTitle("JMP Settings");
@@ -272,7 +306,7 @@ public class Controller {
                 settingsStage.setScene(scene);
             }
 
-            // Show the stage (or re-show if it was previously hidden/closed)
+            // 2. Show the stage (or re-show if it was previously hidden/closed)
             settingsStage.show();
             statusLabel.setText("Settings window opened");
 
@@ -370,7 +404,6 @@ public class Controller {
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double speed = newValue.doubleValue();
             audio_player.setSpeed(speed);
-            statusLabel.setText(String.format("Speed: %.2fx", speed));
         });
     }
 
