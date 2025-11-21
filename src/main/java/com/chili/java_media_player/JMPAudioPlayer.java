@@ -6,6 +6,7 @@ import com.chili.java_media_player.visualizer.Visualizer;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class JMPAudioPlayer implements AudioPlayerInterface {
 
@@ -19,6 +20,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public Media media;
     private javafx.collections.MapChangeListener<String, Object> metadataListener;
     private Visualizer listener;
+    private Duration currentTime;
 
     // private SpectrumDataListener listener;
 
@@ -50,6 +52,8 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
 
     @Override
     public void load(String audio) {
+        if (currentTime == null || this.currentTime.toSeconds() > 0)
+            this.currentTime = new Duration(0);
         // Stop previous player if exists
         if (this.player != null) {
             // Remove listener from old media obj
@@ -76,6 +80,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     @Override
     public void pause() {
         if (this.player != null) {
+            this.currentTime = this.player.getCurrentTime();
             this.player.stop();
         }
     }
@@ -83,6 +88,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     @Override
     public void play() {
         if (this.player != null) {
+            this.player.setStartTime(currentTime);
             this.player.play();
         }
     }
@@ -158,7 +164,6 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
             this.media.getMetadata().addListener(this.metadataListener);
         }
     }
-
 
     public void setSpeed(double speed) {
         this.currentSpeed = speed;

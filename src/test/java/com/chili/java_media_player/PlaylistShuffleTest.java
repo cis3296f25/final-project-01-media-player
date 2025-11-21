@@ -29,7 +29,7 @@ public class PlaylistShuffleTest {
             playlist.addTrack(s);
         }
 
-    long seed = 0L;
+        long seed = 0L;
 
         // Create expected order by shuffling a copy with the same seed
         List<String> expected = new ArrayList<>(original);
@@ -39,7 +39,8 @@ public class PlaylistShuffleTest {
 
         List<String> actual = playlist.getAllTracks();
 
-        assertEquals(expected, actual, "Playlist.shuffle(seed) should produce the same deterministic order as Collections.shuffle with the same seed");
+        assertEquals(expected, actual,
+                "Playlist.shuffle(seed) should produce the same deterministic order as Collections.shuffle with the same seed");
 
         assertEquals(expected.get(0), playlist.getCurrentTrack());
     }

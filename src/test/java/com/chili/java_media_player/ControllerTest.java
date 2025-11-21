@@ -151,7 +151,7 @@ public class ControllerTest {
         }
         assertNotNull(firstSettingsStage, "Initial Settings window was not found.");
 
-        // Record the hash code  of the first stage
+        // Record the hash code of the first stage
         int firstStageHashCode = firstSettingsStage.hashCode();
 
         // Click "Preferences" again
@@ -238,4 +238,5 @@ public class ControllerTest {
         assertNotNull(secondAboutStage, "Second click did not find the About window.");
         assertEquals(firstStageHashCode, secondAboutStage.hashCode(), "Second click opened a new window.");
     }
+
 }
