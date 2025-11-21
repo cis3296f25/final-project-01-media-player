@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.collections.MapChangeListener; //imported here to add a shuffle, can remove later if shuffle not required
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
-import javafx.application.Platform;
-import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,12 +22,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 
 public class Controller {
@@ -372,6 +371,7 @@ public class Controller {
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double speed = newValue.doubleValue();
             audio_player.setSpeed(speed);
+            statusLabel.setText(String.format("Speed: %.2fx", speed));
         });
     }
 
