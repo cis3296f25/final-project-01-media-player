@@ -251,7 +251,6 @@ public class Controller {
         System.exit(0);
     }
 
-    // Controller.java (Modified method)
     public void onSettingsPreferences(ActionEvent actionEvent) {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
@@ -263,7 +262,7 @@ public class Controller {
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
 
-            // 1. Create and store the stage if it's the first time
+            // Create and store the stage if it's the first time
             if (settingsStage == null) {
                 settingsStage = new Stage();
                 settingsStage.setTitle("JMP Settings");
@@ -273,7 +272,7 @@ public class Controller {
                 settingsStage.setScene(scene);
             }
 
-            // 2. Show the stage (or re-show if it was previously hidden/closed)
+            // Show the stage (or re-show if it was previously hidden/closed)
             settingsStage.show();
             statusLabel.setText("Settings window opened");
 
