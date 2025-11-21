@@ -61,6 +61,8 @@ public class Visualizer implements SpectrumDataListener {
         this.graphics_context.setStroke(Color.DODGERBLUE);
         // draw each line
 
+        // gradient?
+
         double barWidth = canvas.getWidth() / number_of_bars;
         // this.graphics_context.setLineWidth(barWidth * 0.70);
         for (int i = 0; i < number_of_bars; i++) {
@@ -73,11 +75,14 @@ public class Visualizer implements SpectrumDataListener {
             double y = canvas.getHeight() - scaledHeight;
 
             // primary line
-            this.graphics_context.setLineWidth(barWidth * 0.70);
+            this.graphics_context.setLineWidth(barWidth * 0.50);
             graphics_context.strokeLine(x, canvas.getHeight(), x, y);
             // smaller line for more visual flare
-            this.graphics_context.setLineWidth(barWidth * 1.00);
+            this.graphics_context.setLineWidth(barWidth * 0.80);
             graphics_context.strokeLine(x, canvas.getHeight(), x, y + (canvas.getHeight() / 6));
+            // smaller line for more visual flare
+            this.graphics_context.setLineWidth(barWidth * 1.20);
+            graphics_context.strokeLine(x, canvas.getHeight(), x, y + (canvas.getHeight() / 4));
         }
 
     }
