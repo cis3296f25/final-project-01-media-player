@@ -171,25 +171,17 @@ public class Controller {
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
                     Playlist playlist = audio_player.getPlaylist();
-
-                    // Check if there's a next track
-                    if (playlist.hasNextTrack()) {
-                        // Advance playlist index
-                        playlist.getNextTrack();
+                    // Check if a track is loaded at all. The initial load only happens on drag-drop.
+                    if (audio_player.getCurrentTrack() == null) {
+                        lastNavigationTime = System.currentTimeMillis();
+                        playlist.resetToFirstTrack();
                         String trackPath = playlist.getCurrentTrack();
-                        audio_player.load(trackPath);
-                        audio_player.play();
-                        updatePlaylistDisplay();
-                    } else {
-                        // At the end of playlist, loop back to the beginning
-                        if (!playlist.isEmpty()) {
-                            // Reset to first track
-                            while (playlist.getCurrentIndex() > 0) {
-                                playlist.getPreviousTrack();
-                            }
-                            audio_player.load(playlist.getCurrentTrack());
+                        if (trackPath != null) {
+                            audio_player.load(trackPath);
                             audio_player.play();
                             updatePlaylistDisplay();
+                            playButton.setText("Pause");
+                            isPaused = false;
                         }
                     }
                 }
@@ -375,6 +367,13 @@ public class Controller {
                 }
                 success = true;
                 updatePlaylistDisplay();
+                Playlist playlist = this.audio_player.getPlaylist();
+                if (playlist.getSize() > 0 && !this.audio_player.currentlyPlaying()) {
+                    playlist.resetToFirstTrack(); // Ensure index is 0
+                    String trackPath = playlist.getCurrentTrack();
+                    this.audio_player.load(trackPath);
+                    this.audio_player.play();
+                }
                 // Update button state to reflect that audio is loaded and playing
                 playButton.setText("Pause");
                 isPaused = false;
