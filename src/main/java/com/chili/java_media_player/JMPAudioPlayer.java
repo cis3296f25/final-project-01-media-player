@@ -69,6 +69,7 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         setVolume(currentVolume * 100);
         setSpeed(currentSpeed);
         // Always set the onEndOfMedia handler if present
+
         if (this.onTrackEndHandler != null) {
             this.player.setOnEndOfMedia(this.onTrackEndHandler);
         }
@@ -176,5 +177,13 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     public void setSpectrumListener(Visualizer visualizer) {
         // TODO Auto-generated method stub
         this.listener = visualizer;
+    }
+
+    @Override
+    public void setupSeekBar() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'setupSeekBar'");
+
     }
 }

@@ -34,4 +34,6 @@ public interface AudioPlayerInterface {
     public void setMetadataListener(javafx.collections.MapChangeListener<String, Object> listener);
 
     public Media media = null;
+
+    public void setupSeekBar();
 }

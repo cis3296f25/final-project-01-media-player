@@ -28,7 +28,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-
 public class Controller {
     @FXML
     private javafx.scene.control.ListView<String> playlistListView;
@@ -46,6 +45,8 @@ public class Controller {
     private Slider volumeSlider;
     @FXML
     private Slider speedSlider;
+    @FXML
+    private Slider seekSlider;
 
     // Potential work on for spectro, meta, credit, and playback functions
     @FXML
@@ -70,7 +71,6 @@ public class Controller {
     private Label albumArtPlaceholder;
     @FXML
     private ListView<String> metaDataListView;
-
 
     @FXML
     private Label welcomeText;
@@ -131,6 +131,7 @@ public class Controller {
         initializeAudio();
         initializeVolumeControl();
         initializeSpeedControl();
+        initializeSeekControl();
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
     }
@@ -189,6 +190,11 @@ public class Controller {
             isPaused = true;
             this.audio_player.pause();
         }
+    }
+
+    private void initializeSeekControl() {
+        // give the JMP Audio player the seekcontrol
+        this.audio_player.setupSeekBar();
     }
 
     // So far I have two ideas,
@@ -499,8 +505,8 @@ public class Controller {
     }
 
     /*
-    *   Controller function for the metadata and album art
-    **/
+     * Controller function for the metadata and album art
+     **/
     public void updateMetaDataDisplay(ObservableMap<String, Object> metadata) {
         // ==== Album Art ====
         Platform.runLater(() -> {
@@ -527,7 +533,6 @@ public class Controller {
         });
     }
 
-
     public List<String> processMetadataForDisplay(ObservableMap<String, Object> metadata) {
         List<String> formattedList = new ArrayList<>();
 
@@ -538,14 +543,13 @@ public class Controller {
 
         // Define the list of fields to display: [Display Label, JavaFX Key]
         String[][] fieldsToDisplay = {
-                {"Artist: ", "artist"},
-                {"Track Title: ", "title"},
-                {"Album: ", "album"},
-                {"Date: ", "year"},
-                {"Track Number: ", "track"},
-                {"Comment: ", "comment-0"}
+                { "Artist: ", "artist" },
+                { "Track Title: ", "title" },
+                { "Album: ", "album" },
+                { "Date: ", "year" },
+                { "Track Number: ", "track" },
+                { "Comment: ", "comment-0" }
         };
-
 
         for (String[] field : fieldsToDisplay) {
             String label = field[0];
@@ -571,7 +575,6 @@ public class Controller {
                     value = value.substring(6);
                 }
             }
-
 
             // Format: "Key: Value" (e.g., "Artist: John Jones")
             String displayString = label + value;
