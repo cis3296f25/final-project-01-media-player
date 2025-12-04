@@ -2,6 +2,7 @@ package com.chili.java_media_player;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 
 public interface AudioPlayerInterface {
@@ -35,5 +36,5 @@ public interface AudioPlayerInterface {
 
     public Media media = null;
 
-    public void setupSeekBar();
+    public void setSeekBar(Slider seekSlider);
 }

@@ -131,9 +131,9 @@ public class Controller {
         initializeAudio();
         initializeVolumeControl();
         initializeSpeedControl();
-        initializeSeekControl();
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
+        initializeSeekControl(seekSlider);
     }
 
     private void initializeAutoPlayTimer() {
@@ -168,6 +168,7 @@ public class Controller {
                             audio_player.load(playlist.getCurrentTrack());
                             audio_player.play();
                             updatePlaylistDisplay();
+
                         }
                     }
                 }
@@ -192,9 +193,9 @@ public class Controller {
         }
     }
 
-    private void initializeSeekControl() {
+    private void initializeSeekControl(Slider seekSlider2) {
         // give the JMP Audio player the seekcontrol
-        this.audio_player.setupSeekBar();
+        this.audio_player.setSeekBar(seekSlider2);
     }
 
     // So far I have two ideas,
