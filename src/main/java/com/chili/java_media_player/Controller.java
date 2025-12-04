@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.chili.java_media_player.settings.Settings;
 import com.chili.java_media_player.visualizer.Visualizer;
 
 import javafx.collections.ObservableList;
@@ -18,10 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
@@ -81,6 +79,7 @@ public class Controller {
     @FXML
     private Canvas visualizerCanvas;
 
+
     private AnimationTimer testProgressBarTimer;
     private AnimationTimer autoPlayTimer;
     private AudioPlayerInterface audio_player;
@@ -90,9 +89,11 @@ public class Controller {
     private long lastNavigationTime = 0; // Track when user last manually navigated
     private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds
 
-    private Stage settingsStage;
     private Stage aboutStage;
     private Visualizer visualizer;
+    private Stage settingsStage;
+
+    private long startTime;
 
     // I have no idea how this code works, it's not even being used but it is
     // literally the backbone of everything in this code
@@ -276,7 +277,6 @@ public class Controller {
         System.exit(0);
     }
 
-    // Controller.java (Modified method)
     public void onSettingsPreferences(ActionEvent actionEvent) {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
@@ -312,13 +312,14 @@ public class Controller {
         // Check if the About window is already open and bring it to focus
         if (aboutStage != null && aboutStage.isShowing()) {
             aboutStage.toFront();
+
             statusLabel.setText("About window brought to front");
             return;
         }
 
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("about.fxml"));
-
+            final ProgressIndicator spinner = (ProgressIndicator) root.lookup("#spinner");
             // Create and store the stage if it's the first time
             if (aboutStage == null) {
                 aboutStage = new Stage();
@@ -331,6 +332,19 @@ public class Controller {
 
             // Show the stage
             aboutStage.show();
+            this.startTime = System.nanoTime();
+
+            this.testProgressBarTimer = new AnimationTimer() {
+
+                @Override
+                public void handle(long now) {
+                    double elapsedSeconds = (now - startTime) / 1_000_000_000.0;
+                    double progress = (elapsedSeconds % 5) / 5.0; // Loops every 5 seconds
+                    spinner.setProgress(progress);
+                    // testProgressBar.setProgress(now(double));
+                }
+            };
+            testProgressBarTimer.start();
             statusLabel.setText("About window opened");
 
         } catch (IOException e) {
