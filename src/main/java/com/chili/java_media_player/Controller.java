@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.collections.MapChangeListener; //imported here to add a shuffle, can remove later if shuffle not required
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.animation.AnimationTimer; //imported here to add a shuffle, can remove later if shuffle not required
-import javafx.application.Platform;
-import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,13 +22,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import kotlin.internal.PureReifiable;
+import javafx.scene.control.*;
 
 public class Controller {
     @FXML
@@ -47,6 +48,13 @@ public class Controller {
     private Slider volumeSlider;
     @FXML
     private Slider speedSlider;
+    @FXML
+    private Slider seekSlider;
+
+    @FXML
+    private Label startTime;
+    @FXML
+    private Label lengthTime;
 
     // Potential work on for spectro, meta, credit, and playback functions
     @FXML
@@ -72,7 +80,6 @@ public class Controller {
     @FXML
     private ListView<String> metaDataListView;
 
-
     @FXML
     private Label welcomeText;
     // @FXML
@@ -85,14 +92,13 @@ public class Controller {
     private AnimationTimer autoPlayTimer;
     private AudioPlayerInterface audio_player;
     private boolean isPaused = false;
-    // replayOn: when true, auto-play is disabled and replay behaviour is active
-    private boolean replayOn = false;
     private long lastNavigationTime = 0; // Track when user last manually navigated
     private static final long NAVIGATION_DEBOUNCE_MS = 500; // Debounce time in milliseconds
 
     private Stage settingsStage;
     private Stage aboutStage;
     private Visualizer visualizer;
+    private long spinnerStartTime;
 
     // I have no idea how this code works, it's not even being used but it is
     // literally the backbone of everything in this code
@@ -103,18 +109,6 @@ public class Controller {
 
         ((JMPAudioPlayer) this.audio_player).setOnTrackEnd(() -> {
             Playlist playlist = audio_player.getPlaylist();
-            // If replay mode is ON, restart the same track instead of advancing
-            if (replayOn) {
-                lastNavigationTime = System.currentTimeMillis();
-                String trackPath = playlist.getCurrentTrack();
-                if (trackPath != null) {
-                    audio_player.load(trackPath);
-                    audio_player.play();
-                    updatePlaylistDisplay();
-                }
-                return;
-            }
-
             if (playlist.hasNextTrack()) {
                 lastNavigationTime = System.currentTimeMillis();
                 playlist.getNextTrack();
@@ -146,22 +140,15 @@ public class Controller {
         initializeAudio();
         initializeVolumeControl();
         initializeSpeedControl();
-        // Ensure replay button reflects default state
-        if (replayButton != null) {
-            replayButton.setText("Replay: Off");
-        }
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
+        initializeSeekSlider();
     }
 
     private void initializeAutoPlayTimer() {
         this.autoPlayTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // If replay toggle is enabled, auto-advance should be disabled
-                if (replayOn) {
-                    return;
-                }
                 // Check if user recently navigated (debounce period)
                 long timeSinceNavigation = System.currentTimeMillis() - lastNavigationTime;
                 if (timeSinceNavigation < NAVIGATION_DEBOUNCE_MS) {
@@ -171,25 +158,17 @@ public class Controller {
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
                     Playlist playlist = audio_player.getPlaylist();
-
-                    // Check if there's a next track
-                    if (playlist.hasNextTrack()) {
-                        // Advance playlist index
-                        playlist.getNextTrack();
+                    // Check if a track is loaded at all. The initial load only happens on drag-drop.
+                    if (audio_player.getCurrentTrack() == null) {
+                        lastNavigationTime = System.currentTimeMillis();
+                        playlist.resetToFirstTrack();
                         String trackPath = playlist.getCurrentTrack();
-                        audio_player.load(trackPath);
-                        audio_player.play();
-                        updatePlaylistDisplay();
-                    } else {
-                        // At the end of playlist, loop back to the beginning
-                        if (!playlist.isEmpty()) {
-                            // Reset to first track
-                            while (playlist.getCurrentIndex() > 0) {
-                                playlist.getPreviousTrack();
-                            }
-                            audio_player.load(playlist.getCurrentTrack());
+                        if (trackPath != null) {
+                            audio_player.load(trackPath);
                             audio_player.play();
                             updatePlaylistDisplay();
+                            playButton.setText("Pause");
+                            isPaused = false;
                         }
                     }
                 }
@@ -284,8 +263,7 @@ public class Controller {
         System.exit(0);
     }
 
-    // Controller.java (Modified method)
-    public void onSettingsPreferences() {
+    public void onSettingsPreferences(ActionEvent actionEvent) {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
             settingsStage.toFront();
@@ -296,7 +274,7 @@ public class Controller {
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("settingsMenu.fxml"));
 
-            // 1. Create and store the stage if it's the first time
+            // Create and store the stage if it's the first time
             if (settingsStage == null) {
                 settingsStage = new Stage();
                 settingsStage.setTitle("JMP Settings");
@@ -306,7 +284,7 @@ public class Controller {
                 settingsStage.setScene(scene);
             }
 
-            // 2. Show the stage (or re-show if it was previously hidden/closed)
+            // Show the stage (or re-show if it was previously hidden/closed)
             settingsStage.show();
             statusLabel.setText("Settings window opened");
 
@@ -327,6 +305,7 @@ public class Controller {
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("about.fxml"));
 
+            final ProgressIndicator spinner = (ProgressIndicator) root.lookup("#spinner");
             // Create and store the stage if it's the first time
             if (aboutStage == null) {
                 aboutStage = new Stage();
@@ -339,6 +318,17 @@ public class Controller {
 
             // Show the stage
             aboutStage.show();
+            this.spinnerStartTime = System.nanoTime();
+            this.testProgressBarTimer = new AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    double elapsedSeconds = (now - spinnerStartTime) / 1_000_000_000.0;
+                    double progress = (elapsedSeconds % 5) / 5.0; // Loops every 5 seconds
+                    spinner.setProgress(progress);
+                    // testProgressBar.setProgress(now(double));
+                }
+            };
+            testProgressBarTimer.start();
             statusLabel.setText("About window opened");
 
         } catch (IOException e) {
@@ -375,6 +365,13 @@ public class Controller {
                 }
                 success = true;
                 updatePlaylistDisplay();
+                Playlist playlist = this.audio_player.getPlaylist();
+                if (playlist.getSize() > 0 && !this.audio_player.currentlyPlaying()) {
+                    playlist.resetToFirstTrack(); // Ensure index is 0
+                    String trackPath = playlist.getCurrentTrack();
+                    this.audio_player.load(trackPath);
+                    this.audio_player.play();
+                }
                 // Update button state to reflect that audio is loaded and playing
                 playButton.setText("Pause");
                 isPaused = false;
@@ -404,7 +401,21 @@ public class Controller {
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double speed = newValue.doubleValue();
             audio_player.setSpeed(speed);
+            statusLabel.setText(String.format("Speed: %.2fx", speed));
         });
+    }
+
+    @FXML
+    private void initializeSeekSlider() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'initializeSeekControl'");
+        // System.out.println("initizlizing..");
+
+        // Giving a seekslider pointer to audio player
+        audio_player.setSeekSlider(this.seekSlider, this.startTime, this.lengthTime);
+        // if seekslider is not null, the audio player will setupSeekBarToCurrentMedia.
+        // else, it's probably a test enviorment
     }
 
     private void updatePlaylistDisplay() {
@@ -521,19 +532,9 @@ public class Controller {
         playButton.setText("Play");
     }
 
-    // POTENTIAL STUFF FOR FUTURE UI ELEMENTS
-    public void updateSpectrogram() {
-    }
-
-    public void updateMetaData() {
-    }
-
-    public void updateExportCredits() {
-    }
-
     /*
-    *   Controller function for the metadata and album art
-    **/
+     * Controller function for the metadata and album art
+     **/
     public void updateMetaDataDisplay(ObservableMap<String, Object> metadata) {
         // ==== Album Art ====
         Platform.runLater(() -> {
@@ -560,7 +561,6 @@ public class Controller {
         });
     }
 
-
     public List<String> processMetadataForDisplay(ObservableMap<String, Object> metadata) {
         List<String> formattedList = new ArrayList<>();
 
@@ -571,14 +571,13 @@ public class Controller {
 
         // Define the list of fields to display: [Display Label, JavaFX Key]
         String[][] fieldsToDisplay = {
-                {"Artist: ", "artist"},
-                {"Track Title: ", "title"},
-                {"Album: ", "album"},
-                {"Date: ", "year"},
-                {"Track Number: ", "track"},
-                {"Comment: ", "comment-0"}
+                { "Artist: ", "artist" },
+                { "Track Title: ", "title" },
+                { "Album: ", "album" },
+                { "Date: ", "year" },
+                { "Track Number: ", "track" },
+                { "Comment: ", "comment-0" }
         };
-
 
         for (String[] field : fieldsToDisplay) {
             String label = field[0];
@@ -604,7 +603,6 @@ public class Controller {
                     value = value.substring(6);
                 }
             }
-
 
             // Format: "Key: Value" (e.g., "Artist: John Jones")
             String displayString = label + value;
