@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.scene.image.Image;
+import java.io.InputStream;
 
 public class JavaMediaPlayer extends Application {
 
@@ -18,6 +20,10 @@ public class JavaMediaPlayer extends Application {
     public void start(Stage stage) throws IOException {
         // Load settings from file or create defaults
         SettingsManager.getInstance().loadSettings();
+        //Setup app icon
+        InputStream iconStream = getClass().getResourceAsStream("icon.png");
+        Image applicationIcon = new Image(iconStream);
+        stage.getIcons().add(applicationIcon);
 
         FXMLLoader fxmlLoader = new FXMLLoader(JavaMediaPlayer.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320 * 3, 240 * 3);
