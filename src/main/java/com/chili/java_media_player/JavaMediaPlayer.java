@@ -62,6 +62,19 @@ public class JavaMediaPlayer extends Application {
                     case BACK_SLASH:
                         controller.onSettingsPreferences();
                         break;
+                    case ESCAPE:
+                        Platform.exit();
+                        break;
+                    case X:
+                        if (stage.isMaximized() == true)
+                        {
+                            stage.setMaximized(false);
+                        }
+                        else
+                        {
+                            stage.setMaximized(true);
+                        }
+                        break;
                     default:
                         break;
                 }
