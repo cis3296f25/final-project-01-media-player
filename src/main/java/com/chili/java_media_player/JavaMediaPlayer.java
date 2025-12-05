@@ -40,6 +40,7 @@ public class JavaMediaPlayer extends Application {
                         break;
                     case S:
                         controller.shuffleClick();
+                        break;
                     case C:
                         controller.clearPlaylistClick();
                         break;
