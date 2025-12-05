@@ -46,9 +46,6 @@ public class JavaMediaPlayer extends Application {
                     case BACK_SPACE:
                         controller.removeTrackClick();
                         break;
-                    case LEFT:
-                        controller.previousTrackClick();
-                        break;
                     case OPEN_BRACKET:
                         controller.previousTrackClick();
                         break;
@@ -58,7 +55,6 @@ public class JavaMediaPlayer extends Application {
                     case BACK_QUOTE:
                         controller.onSettingsAbout();
                         break;
-                    //this was going to open up the settings...
                     case BACK_SLASH:
                         controller.onSettingsPreferences();
                         break;
@@ -67,13 +63,8 @@ public class JavaMediaPlayer extends Application {
                         break;
                     case X:
                         if (stage.isMaximized() == true)
-                        {
-                            stage.setMaximized(false);
-                        }
-                        else
-                        {
-                            stage.setMaximized(true);
-                        }
+                            {stage.setMaximized(false);}
+                        else {stage.setMaximized(true);}
                         break;
                     default:
                         break;

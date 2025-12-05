@@ -32,21 +32,13 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chili.java_media_player.settings.SettingsController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chili.java_media_player.settings.SettingsController">
     <children>
         <SplitPane dividerPositions="0.30120481927710846" focusTraversable="true" VBox.vgrow="ALWAYS">
             <items>
@@ -77,6 +69,7 @@
                                                 <Tooltip text="Example Setting Tooltip 2" />
                                             </tooltip>
                                         </CheckBox>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="h1" text="Hotkeys&#10;Play/pause : P&#10;Replay :  R&#10;Shuffle : S&#10;Clear Playlist : C&#10;Remove Track : Back Space&#10;Previous Track :  [&#10;Next Track : ]&#10;Settings : `&#10;Full Screen Toggle : x&#10;Close Program : ESC" />
                                     </children>
                                 </VBox>
                             </children>
@@ -98,10 +91,10 @@
                 <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
                 <Label font="$x3" maxWidth="-1.0" textFill="$x4" HBox.hgrow="NEVER">
                     <graphic>
-                        <Button fx:id="applyButton" mnemonicParsing="false" text="Apply" onAction="#onApplyClick" />
+                        <Button fx:id="applyButton" mnemonicParsing="false" onAction="#onApplyClick" text="Apply" />
                     </graphic>
                 </Label>
-                <Button fx:id="closeButton" mnemonicParsing="false" text="Close" onAction="#onCloseClick" />
+                <Button fx:id="closeButton" mnemonicParsing="false" onAction="#onCloseClick" text="Close" />
             </children>
             <padding>
                 <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
