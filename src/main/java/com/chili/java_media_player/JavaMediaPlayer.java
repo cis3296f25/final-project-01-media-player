@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -21,8 +22,17 @@ public class JavaMediaPlayer extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(JavaMediaPlayer.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320 * 3, 240 * 3);
         stage.setTitle("Java Media Player & Audio Visualizer");
+        Controller controller  = fxmlLoader.getController();
         // function that runs when user exits the program
         // cleans up child stages
+
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent event) {
+
+            }
+        });
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
