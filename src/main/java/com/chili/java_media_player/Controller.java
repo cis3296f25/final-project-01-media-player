@@ -29,6 +29,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import kotlin.internal.PureReifiable;
+import javafx.scene.control.*;
 
 public class Controller {
     @FXML
@@ -97,6 +98,7 @@ public class Controller {
     private Stage settingsStage;
     private Stage aboutStage;
     private Visualizer visualizer;
+    private long spinnerStartTime;
 
     // I have no idea how this code works, it's not even being used but it is
     // literally the backbone of everything in this code
@@ -156,31 +158,17 @@ public class Controller {
                 // Only auto-advance if NOT paused and playback stopped
                 if (!isPaused && !audio_player.currentlyPlaying() && !audio_player.getPlaylist().isEmpty()) {
                     Playlist playlist = audio_player.getPlaylist();
-                    // Check if a track is loaded at all. The initial load only happens on
-                    // drag-drop.
+                    // Check if a track is loaded at all. The initial load only happens on drag-drop.
                     if (audio_player.getCurrentTrack() == null) {
                         lastNavigationTime = System.currentTimeMillis();
                         playlist.resetToFirstTrack();
-                    }
-                    // Check if there's a next track
-                    if (playlist.hasNextTrack()) {
-                        // Advance playlist index
-                        playlist.getNextTrack();
                         String trackPath = playlist.getCurrentTrack();
-                        audio_player.load(trackPath);
-                        audio_player.play();
-                        updatePlaylistDisplay();
-                    } else {
-                        // At the end of playlist, loop back to the beginning
-                        if (!playlist.isEmpty()) {
-                            // Reset to first track
-                            while (playlist.getCurrentIndex() > 0) {
-                                playlist.getPreviousTrack();
-                            }
-                            audio_player.load(playlist.getCurrentTrack());
+                        if (trackPath != null) {
+                            audio_player.load(trackPath);
                             audio_player.play();
                             updatePlaylistDisplay();
-
+                            playButton.setText("Pause");
+                            isPaused = false;
                         }
                     }
                 }
@@ -307,6 +295,7 @@ public class Controller {
         try {
             Parent root = FXMLLoader.load(JavaMediaPlayer.class.getResource("about.fxml"));
 
+            final ProgressIndicator spinner = (ProgressIndicator) root.lookup("#spinner");
             // Create and store the stage if it's the first time
             if (aboutStage == null) {
                 aboutStage = new Stage();
@@ -319,6 +308,17 @@ public class Controller {
 
             // Show the stage
             aboutStage.show();
+            this.spinnerStartTime = System.nanoTime();
+            this.testProgressBarTimer = new AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    double elapsedSeconds = (now - spinnerStartTime) / 1_000_000_000.0;
+                    double progress = (elapsedSeconds % 5) / 5.0; // Loops every 5 seconds
+                    spinner.setProgress(progress);
+                    // testProgressBar.setProgress(now(double));
+                }
+            };
+            testProgressBarTimer.start();
             statusLabel.setText("About window opened");
 
         } catch (IOException e) {
@@ -355,6 +355,13 @@ public class Controller {
                 }
                 success = true;
                 updatePlaylistDisplay();
+                Playlist playlist = this.audio_player.getPlaylist();
+                if (playlist.getSize() > 0 && !this.audio_player.currentlyPlaying()) {
+                    playlist.resetToFirstTrack(); // Ensure index is 0
+                    String trackPath = playlist.getCurrentTrack();
+                    this.audio_player.load(trackPath);
+                    this.audio_player.play();
+                }
                 // Update button state to reflect that audio is loaded and playing
                 playButton.setText("Pause");
                 isPaused = false;
