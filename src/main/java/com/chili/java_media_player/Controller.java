@@ -99,6 +99,7 @@ public class Controller {
     private Stage aboutStage;
     private Visualizer visualizer;
     private long spinnerStartTime;
+    private boolean replayOn = false;
 
     // I have no idea how this code works, it's not even being used but it is
     // literally the backbone of everything in this code
@@ -263,7 +264,7 @@ public class Controller {
         System.exit(0);
     }
 
-    public void onSettingsPreferences(ActionEvent actionEvent) {
+    public void onSettingsPreferences() {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
             settingsStage.toFront();
