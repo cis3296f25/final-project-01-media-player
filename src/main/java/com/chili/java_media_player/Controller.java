@@ -436,7 +436,7 @@ public class Controller {
     }
 
     // next track button, has a check to see if the next is empty
-    public void nextTrackClick(ActionEvent actionEvent) {
+    public void nextTrackClick() {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String nextTrack = this.audio_player.nextTrack();
         if (nextTrack != null) {
@@ -450,7 +450,7 @@ public class Controller {
     }
 
     // next track, but reverse
-    public void previousTrackClick(ActionEvent actionEvent) {
+    public void previousTrackClick() {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String prevTrack = this.audio_player.previousTrack();
         if (prevTrack != null) {
@@ -463,7 +463,7 @@ public class Controller {
         }
     }
 
-    public void removeTrackClick(ActionEvent actionEvent) {
+    public void removeTrackClick() {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist.isEmpty()) {
             statusLabel.setText("Playlist is empty");

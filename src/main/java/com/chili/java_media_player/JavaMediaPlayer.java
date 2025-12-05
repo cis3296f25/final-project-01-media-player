@@ -30,6 +30,7 @@ public class JavaMediaPlayer extends Application {
 
             @Override
             public void handle(KeyEvent event) {
+                System.out.println(event.getCode());
                 switch(event.getCode()) {
                     case P:
                         controller.onPlayClick();
@@ -40,7 +41,18 @@ public class JavaMediaPlayer extends Application {
                     case S:
                         controller.shuffleClick();
                         break;
-
+                    case BACK_SPACE:
+                        controller.removeTrackClick();
+                        break;
+                    case LEFT:
+                        controller.previousTrackClick();
+                        break;
+                    case OPEN_BRACKET:
+                        controller.previousTrackClick();
+                        break;
+                    case CLOSE_BRACKET:
+                        controller.nextTrackClick();
+                        break;
                     default:
                         break;
                 }
