@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chili.java_media_player.settings.SettingsController">
+    <children>
+        <SplitPane dividerPositions="0.30120481927710846" focusTraversable="true" VBox.vgrow="ALWAYS">
+            <items>
+                <AnchorPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0">
+                    <children>
+                        <VBox layoutX="10.0" layoutY="10.0" prefWidth="140.0" spacing="5.0">
+                            <children>
+                                <Label styleClass="h1" text="General" />
+                                <Label text="Playback" />
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+                <ScrollPane fitToWidth="true" prefHeight="-1.0" prefWidth="-1.0">
+                    <content>
+                        <AnchorPane prefHeight="510.0" prefWidth="255.0">
+                            <children>
+                                <VBox layoutX="10.0" layoutY="10.0" prefWidth="320.0" spacing="10.0">
+                                    <children>
+                                        <Label styleClass="h1" text="Playback Settings" />
+                                        <CheckBox fx:id="exampleSetting1Checkbox" mnemonicParsing="false" text="Example Setting 1">
+                                            <tooltip>
+                                                <Tooltip text="Example Setting Tooltip 1" />
+                                            </tooltip>
+                                        </CheckBox>
+                                        <CheckBox fx:id="exampleSetting2Checkbox" mnemonicParsing="false" text="Example Setting 2">
+                                            <tooltip>
+                                                <Tooltip text="Example Setting Tooltip 2" />
+                                            </tooltip>
+                                        </CheckBox>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="h1" text="Hotkeys&#10;Play/pause : P&#10;Replay :  R&#10;Shuffle : S&#10;Clear Playlist : C&#10;Remove Track : Back Space&#10;Previous Track :  [&#10;Next Track : ]&#10;Settings : `&#10;Full Screen Toggle : x&#10;Close Program : ESC" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </ScrollPane>
+            </items>
+        </SplitPane>
+        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+            <children>
+                <Label fx:id="settingsStatusLabel" maxHeight="1.7976931348623157E308" maxWidth="-1.0" HBox.hgrow="ALWAYS">
+                    <font>
+                        <Font size="11.0" fx:id="x3" />
+                    </font>
+                    <textFill>
+                        <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
+                    </textFill>
+                </Label>
+                <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                <Label font="$x3" maxWidth="-1.0" textFill="$x4" HBox.hgrow="NEVER">
+                    <graphic>
+                        <Button fx:id="applyButton" mnemonicParsing="false" onAction="#onApplyClick" text="Apply" />
+                    </graphic>
+                </Label>
+                <Button fx:id="closeButton" mnemonicParsing="false" onAction="#onCloseClick" text="Close" />
+            </children>
+            <padding>
+                <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
+            </padding>
+        </HBox>
+    </children>
+</VBox>

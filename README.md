@@ -1,23 +1,15 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# JMP
 
-![This is a screenshot.](images.png)
+JMP is a media player with an audio visualizer 
+
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
-```
-tar -xzf  
-```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
+## Mac 
+Download `mac.zip` from the latest release.
+Extract and run `mac\bin\app`
 
-# How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+## Windows
+Download `windows.zip` from the latest release.
+Extract and run `bin\app.bat`
 
 ### How to build
 - Use this github repository: ... 
@@ -26,3 +18,24 @@ Follow this project board to know the latest status of the project: [http://...]
 - Specify additional library to download if needed 
 - What file and target to compile and run. 
 - What is expected to happen when the app start. 
+
+
+- Clone this repository with `git clone`
+- Preferably use IntelliJ for the most simple experience setting up the project 
+	- Open the local repository from the IDE 
+	- Click the build icon on the top righthand corner of the screen.
+	- Navigate to the `target\`
+- If you want to use the CLI instead.
+	- Navigate to the local repository from the command line. 
+	- in the root folder of the repository run: `./mvn javafx:jlink`
+	- this will compile the app file and create a zip in the `target\` folder
+
+PREREQUISITES:
+- openjdk21++
+- Maven
+- JavaFX
+OPERATING SYSTEMS:
+- Windows 11 Version 10.0.26100
+- MacOS Sequoia 15.6.1
+PREFERED IDE
+- Intellij V21

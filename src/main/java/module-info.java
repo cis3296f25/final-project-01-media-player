@@ -1,0 +1,23 @@
+module com.chili.java_media_player {
+    requires transitive javafx.controls;
+    requires transitive javafx.base;
+    requires javafx.fxml;
+    requires javafx.web;
+
+    requires org.controlsfx.controls;
+    requires com.dlsc.formsfx;
+    requires net.synedra.validatorfx;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.bootstrapfx.core;
+    requires eu.hansolo.tilesfx;
+    requires com.almasb.fxgl.all;
+    requires javafx.graphics;
+    requires java.desktop;
+    requires javafx.media;
+    requires com.google.gson;
+    requires java.base;
+
+    opens com.chili.java_media_player to javafx.fxml;
+    opens com.chili.java_media_player.settings to com.google.gson, javafx.fxml;
+    exports com.chili.java_media_player;
+}
