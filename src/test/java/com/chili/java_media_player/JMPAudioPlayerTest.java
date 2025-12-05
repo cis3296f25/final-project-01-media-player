@@ -3,11 +3,21 @@ package com.chili.java_media_player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import javafx.application.Platform;
 
 public class JMPAudioPlayerTest {
 
     private AudioPlayerInterface player;
+
+    @BeforeAll
+    public static void initJfx() {
+        Platform.startup(() -> {
+        });
+    }
 
     public JMPAudioPlayerTest() {
         this.player = new JMPAudioPlayer();
@@ -36,7 +46,7 @@ public class JMPAudioPlayerTest {
 
     // Does Playing work?
     @Test
-    void testPlay() throws InterruptedException{
+    void testPlay() throws InterruptedException {
         String audio_source_test = "src/test/java/resources/야생ｋｉｎｅｔｉｃ꿈 - icy constellations [2901409654].mp3";
         player.load(audio_source_test);
         player.play();

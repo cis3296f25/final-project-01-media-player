@@ -37,7 +37,6 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         this.playlist = new Playlist();
         this.player = null;
         this.current_track_path = null;
-
     }
 
     /**
