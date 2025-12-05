@@ -30,7 +30,13 @@ public class JavaMediaPlayer extends Application {
 
             @Override
             public void handle(KeyEvent event) {
-
+                switch(event.getCode()) {
+                    case SPACE:
+                        controller.onPlayClick();
+                        break;
+                    default:
+                        break;
+                }
             }
         });
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

@@ -200,7 +200,7 @@ public class Controller {
 
     @FXML
 
-    public void onPlayClick(ActionEvent actionEvent) {
+    public void onPlayClick() {
         if (playButton.getText().equals("Play")) {
             playButton.setText("Pause");
             statusLabel.setText("The media has started playing");
