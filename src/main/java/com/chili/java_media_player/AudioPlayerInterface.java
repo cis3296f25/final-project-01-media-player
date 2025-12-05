@@ -2,8 +2,10 @@ package com.chili.java_media_player;
 
 import com.chili.java_media_player.visualizer.Visualizer;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
+import javafx.util.Duration;
 
 public interface AudioPlayerInterface {
     public void load(String audio);
@@ -11,6 +13,8 @@ public interface AudioPlayerInterface {
     public void play();
 
     public void pause();
+
+    public void seek(Duration timeStamp);
 
     public String getCurrentTrack();
 
@@ -36,5 +40,6 @@ public interface AudioPlayerInterface {
 
     public Media media = null;
 
-    public void setSeekBar(Slider seekSlider);
+    public void setSeekSlider(Slider seekSlider, Label startTime, Label lengthTime);
+
 }

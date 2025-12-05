@@ -27,6 +27,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import kotlin.internal.PureReifiable;
 
 public class Controller {
     @FXML
@@ -47,6 +49,11 @@ public class Controller {
     private Slider speedSlider;
     @FXML
     private Slider seekSlider;
+
+    @FXML
+    private Label startTime;
+    @FXML
+    private Label lengthTime;
 
     // Potential work on for spectro, meta, credit, and playback functions
     @FXML
@@ -133,7 +140,7 @@ public class Controller {
         initializeSpeedControl();
         // this.visualizerCanvas = new Canvas();
         this.visualizer = new Visualizer(audio_player, visualizerCanvas);
-        initializeSeekControl(seekSlider);
+        initializeSeekSlider();
     }
 
     private void initializeAutoPlayTimer() {
@@ -191,11 +198,6 @@ public class Controller {
             isPaused = true;
             this.audio_player.pause();
         }
-    }
-
-    private void initializeSeekControl(Slider seekSlider2) {
-        // give the JMP Audio player the seekcontrol
-        this.audio_player.setSeekBar(seekSlider2);
     }
 
     // So far I have two ideas,
@@ -381,6 +383,19 @@ public class Controller {
         });
     }
 
+    @FXML
+    private void initializeSeekSlider() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'initializeSeekControl'");
+        // System.out.println("initizlizing..");
+
+        // Giving a seekslider pointer to audio player
+        audio_player.setSeekSlider(this.seekSlider, this.startTime, this.lengthTime);
+        // if seekslider is not null, the audio player will setupSeekBarToCurrentMedia.
+        // else, it's probably a test enviorment
+    }
+
     private void updatePlaylistDisplay() {
         Playlist playlist = this.audio_player.getPlaylist();
         // Update the ListView with the current playlist
@@ -493,16 +508,6 @@ public class Controller {
         updatePlaylistDisplay();
         statusLabel.setText("Playlist cleared");
         playButton.setText("Play");
-    }
-
-    // POTENTIAL STUFF FOR FUTURE UI ELEMENTS
-    public void updateSpectrogram() {
-    }
-
-    public void updateMetaData() {
-    }
-
-    public void updateExportCredits() {
     }
 
     /*

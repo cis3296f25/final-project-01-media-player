@@ -6,6 +6,7 @@ import com.chili.java_media_player.visualizer.Visualizer;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -26,6 +27,9 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     private Duration currentTime;
     private Slider seekSlider;
     private long lastUpdate = 0;
+
+    private Label startTime;
+    private Label lengthTime;
 
     // private SpectrumDataListener listener;
 
@@ -74,46 +78,18 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
         setVolume(currentVolume * 100);
         setSpeed(currentSpeed);
         // Always set the onEndOfMedia handler if present
-        setupSeekBarToCurrentMedia();
+
         if (this.onTrackEndHandler != null) {
             this.player.setOnEndOfMedia(this.onTrackEndHandler);
         }
         if (this.metadataListener != null) {
             this.media.getMetadata().addListener(this.metadataListener);
         }
-    }
-
-    /**
-     * Sets up events for media player and slider to update the player on slider
-     */
-    private void setupSeekBarToCurrentMedia() {
-        player.setOnReady(() -> {
-            seekSlider.setMax(player.getTotalDuration().toSeconds());
-            // player progress update
-            player.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
-
-                long now = System.currentTimeMillis();
-                // Only update slider if the user is not dragging it
-                if (!seekSlider.isValueChanging() && (now - lastUpdate) > 50) {
-                    seekSlider.setValue(newTime.toSeconds());
-                    lastUpdate = now;
-                }
-            });
-        });
-
-        // User scrolls seek bar
-        seekSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
-            long now = System.currentTimeMillis();
-            if (!isChanging) { // User finished dragging
-                player.seek(Duration.seconds(seekSlider.getValue()));
-            }
-        });
-
-        // Click to seek if implemented like the other events will cause a bug on MacOS,
-        // due to the amount of seek() function calls.
-        //
-        // Trigger Event instead on Mouse release seems to not work either.
-
+        // if seekslider is not null, the audio player will setupSeekBarToCurrentMedia.
+        // else, it's probably a test enviorment
+        if (seekSlider != null) {
+            setupSeekBarToCurrentMedia();
+        }
     }
 
     @Override
@@ -218,11 +194,59 @@ public class JMPAudioPlayer implements AudioPlayerInterface {
     }
 
     @Override
-    public void setSeekBar(Slider seekSlider) {
+    public void seek(Duration seekTime) {
+        this.player.seek(seekTime);
+    }
+
+    /**
+     * Sets up events for media player and slider to update the player on slider
+     */
+    private void setupSeekBarToCurrentMedia() {
+        player.setOnReady(() -> {
+            Duration totalDuration = player.getTotalDuration();
+            seekSlider.setMax(totalDuration.toSeconds());
+            // lengthTime.setText(String.format("%d:%f", (int) totalDuration.toMinutes(),
+            // totalDuration.toSeconds()));
+            lengthTime.setText(
+                    String.format("%02d:%02d", (int) totalDuration.toMinutes(),
+                            (int) totalDuration.toSeconds() % 60));
+            // player progress update
+            player.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+
+                long now = System.currentTimeMillis();
+                // Only update slider if the user is not dragging it
+                if (!seekSlider.isValueChanging() && (now - lastUpdate) > 50) {
+                    // startTime.setText(newTime.toString());
+                    startTime.setText(
+                            String.format("%02d:%02d", (int) newTime.toMinutes(), (int) newTime.toSeconds() % 60));
+                    seekSlider.setValue(newTime.toSeconds());
+
+                    lastUpdate = now;
+                }
+            });
+        });
+
+        // User scrolls seek bar
+        seekSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
+            long now = System.currentTimeMillis();
+            if (!isChanging) { // User finished dragging
+                player.seek(Duration.seconds(seekSlider.getValue()));
+            }
+        });
+
+        // Click to seek if implemented like the other events will cause a bug on MacOS,
+        // due to the amount of seek() function calls.
+        //
+        // Trigger Event instead on Mouse release seems to not work either.
+
+    }
+
+    @Override
+    public void setSeekSlider(Slider seekSlider, Label startTime, Label lengthTime) {
         // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method
-        // 'setupSeekBar'");
         this.seekSlider = seekSlider;
+        this.startTime = startTime;
+        this.lengthTime = lengthTime;
     }
 
 }
