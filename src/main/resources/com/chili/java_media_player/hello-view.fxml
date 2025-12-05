@@ -89,7 +89,7 @@
             </VBox>
 
             <VBox alignment="CENTER" spacing="2" style="-fx-padding: 0 10 0 10;">
-                <Label text="Playback Speed(PLACE HOLDER)" style="-fx-font-size: 11; -fx-text-fill: #000000ff;" />
+                <Label text="Playback Speed" style="-fx-font-size: 11; -fx-text-fill: #000000ff;" />
                 <Slider fx:id="speedSlider" min="0.25" max="2.0" value="1.0" blockIncrement="0.25" majorTickUnit="0.25" minorTickCount="0" snapToTicks="true" showTickLabels="true" showTickMarks="true" prefWidth="340" styleClass="speed-slider" />
             </VBox>
 
@@ -120,9 +120,7 @@
                       style="-fx-border-color: black; -fx-border-width: 2; -fx-padding: 0;"
                       VBox.vgrow="ALWAYS" />
 
-            <StackPane prefWidth="220" prefHeight="80" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: #fafafa;">
-                <Label text="Export Options or Credits(PLACEHOLDER)" style="-fx-font-size: 12; -fx-font-style: italic; -fx-text-fill: #000000ff;" wrapText="true" />
-            </StackPane>
+
         </VBox>
     </right>
 
