@@ -2,6 +2,3 @@
     /* Set -fx-show-delay to 0ms (0s) */
     -fx-show-delay: 0ms;
 }
-.progress-indicator .percentage {
-    -fx-fill:null;
-}

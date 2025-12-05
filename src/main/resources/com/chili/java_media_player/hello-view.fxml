@@ -9,9 +9,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.chili.java_media_player.Controller"
-            style="-fx-background-color: gray;"
-            prefWidth="1000"
-            prefHeight="700">
+            style="-fx-background-color: gray;">
     <left>
         <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 0 10 0 0;">
             <Label text="Playlist" style="-fx-font-size: 14;" />
@@ -82,9 +80,9 @@
             <VBox alignment="CENTER" spacing="6" style="-fx-padding: 6 10 0 10;">
                 <Slider fx:id="seekSlider" min="0" max="100" value="0" prefWidth="460" />
                 <HBox alignment="CENTER" spacing="8">
-                    <Label text="0:00" />
+                    <Label fx:id="startTime" text="0:00" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Label text="0:00" />
+                    <Label fx:id="lengthTime" text="0:00" />
                 </HBox>
             </VBox>
 
