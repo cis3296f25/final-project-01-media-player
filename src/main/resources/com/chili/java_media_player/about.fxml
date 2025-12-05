@@ -11,5 +11,6 @@
       <Text layoutX="16.0" layoutY="73.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Yong Yao Huang" />
       <Text layoutX="16.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Joseph Fiore" />
       <Text layoutX="17.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Logan Small" />
+       <Text layoutX="16.0" layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Chili Ramgolam" />
    </children>
 </AnchorPane>

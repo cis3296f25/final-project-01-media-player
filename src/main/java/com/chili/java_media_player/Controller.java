@@ -285,7 +285,7 @@ public class Controller {
     }
 
     // Controller.java (Modified method)
-    public void onSettingsPreferences(ActionEvent actionEvent) {
+    public void onSettingsPreferences() {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
             settingsStage.toFront();
@@ -316,7 +316,7 @@ public class Controller {
         }
     }
 
-    public void onSettingsAbout(ActionEvent actionEvent) {
+    public void onSettingsAbout() {
         // Check if the About window is already open and bring it to focus
         if (aboutStage != null && aboutStage.isShowing()) {
             aboutStage.toFront();
@@ -513,7 +513,7 @@ public class Controller {
         }
     }
 
-    public void clearPlaylistClick(ActionEvent actionEvent) {
+    public void clearPlaylistClick() {
         this.audio_player.pause();
         this.audio_player.getPlaylist().clear();
         updatePlaylistDisplay();

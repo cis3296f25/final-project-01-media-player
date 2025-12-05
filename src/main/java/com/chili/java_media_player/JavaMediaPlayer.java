@@ -40,6 +40,8 @@ public class JavaMediaPlayer extends Application {
                         break;
                     case S:
                         controller.shuffleClick();
+                    case C:
+                        controller.clearPlaylistClick();
                         break;
                     case BACK_SPACE:
                         controller.removeTrackClick();
@@ -52,6 +54,13 @@ public class JavaMediaPlayer extends Application {
                         break;
                     case CLOSE_BRACKET:
                         controller.nextTrackClick();
+                        break;
+                    case BACK_QUOTE:
+                        controller.onSettingsAbout();
+                        break;
+                    //this was going to open up the settings...
+                    case BACK_SLASH:
+                        controller.onSettingsPreferences();
                         break;
                     default:
                         break;
