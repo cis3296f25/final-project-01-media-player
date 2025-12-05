@@ -31,9 +31,16 @@ public class JavaMediaPlayer extends Application {
             @Override
             public void handle(KeyEvent event) {
                 switch(event.getCode()) {
-                    case SPACE:
+                    case P:
                         controller.onPlayClick();
                         break;
+                    case R:
+                        controller.replayClick();
+                        break;
+                    case S:
+                        controller.shuffleClick();
+                        break;
+
                     default:
                         break;
                 }

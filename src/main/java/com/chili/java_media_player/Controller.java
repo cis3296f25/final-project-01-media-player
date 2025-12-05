@@ -219,7 +219,7 @@ public class Controller {
     // just be restart
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
-    public void replayClick(ActionEvent actionEvent) {
+    public void replayClick() {
         // Toggle replay mode. When replay is ON, auto-play is disabled.
         replayOn = !replayOn;
         if (replayOn) {
@@ -234,7 +234,7 @@ public class Controller {
     }
 
     // basic shuffle, play list must be implemented to work on this
-    public void shuffleClick(ActionEvent actionEvent) {
+    public void shuffleClick() {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist == null || playlist.isEmpty() || playlist.getSize() < 2) {
             statusLabel.setText("Not enough tracks to shuffle");
