@@ -99,6 +99,7 @@ public class Controller {
     private Stage aboutStage;
     private Visualizer visualizer;
     private long spinnerStartTime;
+    private boolean replayOn = false;
 
     // I have no idea how this code works, it's not even being used but it is
     // literally the backbone of everything in this code
@@ -179,7 +180,7 @@ public class Controller {
 
     @FXML
 
-    public void onPlayClick(ActionEvent actionEvent) {
+    public void onPlayClick() {
         if (playButton.getText().equals("Play")) {
             playButton.setText("Pause");
             statusLabel.setText("The media has started playing");
@@ -198,12 +199,22 @@ public class Controller {
     // just be restart
     // two where it is a toggleable feature that detects if the timer has reached
     // the audio file's max time and sets it back to zero
-    public void replayClick(ActionEvent actionEvent) {
-        statusLabel.setText("Replayed");
+    public void replayClick() {
+        // Toggle replay mode. When replay is ON, auto-play is disabled.
+        replayOn = !replayOn;
+        if (replayOn) {
+            replayButton.setText("Replay: On");
+            statusLabel.setText("Replay enabled — autoplay disabled");
+        } else {
+            replayButton.setText("Replay: Off");
+            // debounce so autoplay doesn't immediately trigger after turning it back on
+            lastNavigationTime = System.currentTimeMillis();
+            statusLabel.setText("Replay disabled — autoplay enabled");
+        }
     }
 
     // basic shuffle, play list must be implemented to work on this
-    public void shuffleClick(ActionEvent actionEvent) {
+    public void shuffleClick() {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist == null || playlist.isEmpty() || playlist.getSize() < 2) {
             statusLabel.setText("Not enough tracks to shuffle");
@@ -253,7 +264,7 @@ public class Controller {
         System.exit(0);
     }
 
-    public void onSettingsPreferences(ActionEvent actionEvent) {
+    public void onSettingsPreferences() {
         if (settingsStage != null && settingsStage.isShowing()) {
             // If window is already open, bring it to focus
             settingsStage.toFront();
@@ -284,7 +295,7 @@ public class Controller {
         }
     }
 
-    public void onSettingsAbout(ActionEvent actionEvent) {
+    public void onSettingsAbout() {
         // Check if the About window is already open and bring it to focus
         if (aboutStage != null && aboutStage.isShowing()) {
             aboutStage.toFront();
@@ -437,7 +448,7 @@ public class Controller {
     }
 
     // next track button, has a check to see if the next is empty
-    public void nextTrackClick(ActionEvent actionEvent) {
+    public void nextTrackClick() {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String nextTrack = this.audio_player.nextTrack();
         if (nextTrack != null) {
@@ -451,7 +462,7 @@ public class Controller {
     }
 
     // next track, but reverse
-    public void previousTrackClick(ActionEvent actionEvent) {
+    public void previousTrackClick() {
         lastNavigationTime = System.currentTimeMillis(); // Set debounce timer
         String prevTrack = this.audio_player.previousTrack();
         if (prevTrack != null) {
@@ -464,7 +475,7 @@ public class Controller {
         }
     }
 
-    public void removeTrackClick(ActionEvent actionEvent) {
+    public void removeTrackClick() {
         Playlist playlist = this.audio_player.getPlaylist();
         if (playlist.isEmpty()) {
             statusLabel.setText("Playlist is empty");
@@ -514,7 +525,7 @@ public class Controller {
         }
     }
 
-    public void clearPlaylistClick(ActionEvent actionEvent) {
+    public void clearPlaylistClick() {
         this.audio_player.pause();
         this.audio_player.getPlaylist().clear();
         updatePlaylistDisplay();
