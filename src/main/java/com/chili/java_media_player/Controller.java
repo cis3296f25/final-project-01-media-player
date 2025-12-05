@@ -161,7 +161,7 @@ public class Controller {
                     if (audio_player.getCurrentTrack() == null) {
                         lastNavigationTime = System.currentTimeMillis();
                         playlist.resetToFirstTrack();
-
+                    }
                     // Check if there's a next track
                     if (playlist.hasNextTrack()) {
                         // Advance playlist index
